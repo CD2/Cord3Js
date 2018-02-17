@@ -53,8 +53,8 @@ export default class Table {
   }
 
   @action
-  removeRecrod(id) {
-    this.records.remove(id)
+  removeRecord(id) {
+    this.records.delete(id)
   }
 
   @action
