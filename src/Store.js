@@ -4,24 +4,20 @@ import { post } from "axios"
 import { Database } from "./db"
 import Request from "./Request"
 import Response from "./Response"
-import { uid } from './utils'
-import { toJS } from 'mobx'
+import { uid } from "./utils"
+import { toJS } from "mobx"
 
-import {
-  CordError,
-  RecordNotFoundError,
-  IdsNotFoundError
-} from './errors'
+import { CordError, RecordNotFoundError, IdsNotFoundError } from "./errors"
 
 //in charge of communication between the models, the db and the api
 export default class Store {
-
   models = {}
 
-  constructor({ apiUrl = `/`, batchTimeout = 100 } = {}) {
+  constructor({ apiUrl = `/`, batchTimeout = 100, httpMethod = post } = {}) {
     this.apiUrl = apiUrl
     this.batchTimeout = batchTimeout
     this.db = new Database()
+    this.httpRequest = httpMethod
   }
 
   registerModel(model) {
@@ -41,13 +37,13 @@ export default class Store {
     if (!reload && (row.fetched || row.fetching)) return Promise.resolve(row)
     // needs to request
     row.fetching = true
-    return this.fetchIds(api, tableName, data).
-      catch(err => {
+    return this.fetchIds(api, tableName, data)
+      .catch(err => {
         row.fetching = false
         row.fetch_error = true
         throw err
-      }).
-      then(() => {
+      })
+      .then(() => {
         row.fetching = false
         row.fetched = true
         return row
@@ -70,14 +66,9 @@ export default class Store {
     })
   }
 
-
   async findRecord(api, tableName, { id, attributes = [], reload = false } = {}) {
     const row = this.getRecord(tableName, id)
-    if (
-      !reload &&
-      (row.fetched || row.fetching) &&
-      row.hasAttributes(attributes)
-    ) {
+    if (!reload && (row.fetched || row.fetching) && row.hasAttributes(attributes)) {
       return { record: row, errors: [] }
     }
     //needs to request
@@ -115,8 +106,6 @@ export default class Store {
     return recordResponse
   }
 
-
-
   async perform(apiName, tableName, { action, id, ids, data }) {
     if (id !== undefined) {
       if (ids === undefined) ids = []
@@ -131,17 +120,17 @@ export default class Store {
     returns a request builder
   */
   get request() {
-    return (this._request || do {
-      this.beginBatchTimer()
-      this._request = new Request(this)
-    })
+    return (
+      this._request ||
+      do {
+        this.beginBatchTimer()
+        this._request = new Request(this)
+      }
+    )
   }
 
   beginBatchTimer() {
-    this._batchTimer = setTimeout(
-      () => this.performRequest(),
-      this.batchTimeout,
-    )
+    this._batchTimer = setTimeout(() => this.performRequest(), this.batchTimeout)
   }
 
   cancelBatchTimer() {
@@ -152,33 +141,26 @@ export default class Store {
     if (this.request.empty()) return
     const request = this.request
     const requestJson = request.toJSON()
-    this.sendRequest(requestJson).
-      then(response => request.resolve(response)).
-      catch(error => request.reject(error))
+    this.sendRequest(requestJson)
+      .then(response => request.resolve(response))
+      .catch(error => request.reject(error))
     this._request = undefined
   }
 
   sendRequest(data) {
-    return post(this.apiUrl, data, { processData: false }).
-      then(response => new Response(response.data)).
-      then(this.processResponse)
+    return this.httpRequest(this.apiUrl, data, { processData: false })
+      .then(response => new Response(response.data))
+      .then(this.processResponse)
   }
 
   @action
-  processResponse = (response) => {
-
+  processResponse = response => {
     if (response.errors) {
       throw new CordError(response.errors)
     }
 
     response.tables.forEach(responseBlob => {
-      let {
-        table: tableName,
-        ids = {},
-        records = [],
-        aliases = {},
-        _errors,
-      } = responseBlob
+      let { table: tableName, ids = {}, records = [], aliases = {}, _errors } = responseBlob
       const table = this.db.getTable(tableName)
 
       Object.entries(ids).forEach(([key, scopes]) => {
@@ -194,9 +176,7 @@ export default class Store {
       })
 
       table.insertErrors(_errors)
-
     })
     return response
   }
-
 }
