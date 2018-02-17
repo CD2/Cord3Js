@@ -19,7 +19,7 @@ export default class Table {
       id = this.aliases.get(id)
     }
     if (!this.records.has(id)) {
-      this.records.set(id, new Record(id))
+      this.records.set(id, new Record(this, id))
     }
     return this.records.get(id)
   }
@@ -46,10 +46,15 @@ export default class Table {
     const { id } = data
     if (this.records.has(id)) {
     }
-    const record = this.records.has(id) ? this.records.get(id) : new Record(id)
+    const record = this.records.has(id) ? this.records.get(id) : new Record(this, id)
     record.fetched = true
     record.update(data)
     this.records.set(id, record)
+  }
+
+  @action
+  removeRecrod(id) {
+    this.records.remove(id)
   }
 
   @action

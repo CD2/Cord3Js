@@ -2,9 +2,14 @@ import { action, reaction, computed } from "mobx"
 import Row from "./Row"
 
 export default class Record extends Row {
-  constructor(id) {
+  constructor(table, id) {
     super()
+    this.table = table
     this.id = id
+  }
+
+  remove() {
+    this.table.removeRecord(this.id)
   }
 
   update(attributes) {
