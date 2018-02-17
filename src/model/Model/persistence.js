@@ -61,4 +61,14 @@ export default BaseCls =>
       this.reset()
       this.runCallbacks("afterUpdate")
     }
+
+    async destroy() {
+      await this.runCallbacks("beforeDestroy")
+      const { data, errors } = await this.perform(`destroy`)
+      if (errors.length > 0) {
+        throw "delete_failed"
+      }
+      this.record.remove()
+      this.runCallbacks("afterDestroy")
+    }
   }

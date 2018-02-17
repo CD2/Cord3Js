@@ -18,6 +18,8 @@ export default BaseCls => class extends BaseCls {
       'afterInitialize',
       // 'afterRequestedAttributesChanged',
       'afterFind',
+      'beforeDestroy',
+      'afterDestroy',
     ].forEach(name => cls.registerCallback(name))
   }
 
