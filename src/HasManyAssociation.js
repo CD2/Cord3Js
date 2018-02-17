@@ -58,6 +58,10 @@ export default class HasManyAssociation extends Collection {
 
   _unsavedIds = []
   async ids() {
+    // if (!this.owner.attributeLoaded(this.options.foreignKey)) {
+    //   this.owner.requestedAttributes.push(this.options.foreignKey)
+    //   await this.owner.load()
+    // }
     // TODO: check if attribute loaded, if not then load it!!
     const persistedIds = this.owner[this.options.foreignKey] || []
     let ids = persistedIds.concat(this._unsavedIds)

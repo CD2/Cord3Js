@@ -41,6 +41,7 @@ export default BaseCls =>
         throw "save_failed"
       }
       this._id = data.id
+      await this.load()
       await this.runCallbacks("afterCreate")
       return this._id
     }

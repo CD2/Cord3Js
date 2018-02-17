@@ -1,17 +1,15 @@
 import { observable, computed, action } from "mobx"
 import attribute from "../../dsl/attribute"
 import { depricationWarning } from "../../utils"
-console.log(depricationWarning, attribute)
+
 const attributeDepricationWarning = depricationWarning(
   "using static attributes to assign multiple attributes. Please use `@attribute name` syntax",
 )
 
 export default BaseCls =>
   class extends BaseCls {
-    defaultAttributes = {}
-    changes = observable.map()
-
     assignAttributes(attrs) {
+      console.log(this.changes, this)
       Object.entries(attrs).forEach(([key, value]) => (this[key] = value))
     }
 

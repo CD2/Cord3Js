@@ -1,10 +1,7 @@
-// COMMENT THREE: This file appears to be much more complex, lets try and get started with some comments
-
-// COMMENT FOUR: These are just the imports
 import IdsModel from "../Ids"
 import Collection from "../Collection"
 import { mixin } from "../../module"
-
+import { observable } from "mobx"
 class ModelBuilder {
   constructor(model, requestedAttributes) {
     this.model = model
@@ -67,11 +64,11 @@ export default class Model {
   static defaultRequestAttributes = []
   static associations = []
   _id = undefined
-  errored = undefined
-  loaded = undefined
-  loading = undefined
+  defaultAttributes = {}
+  changes = observable.map()
 
   constructor(attributes = {}, requestedAttributes) {
+    console.log(this.changes)
     attributes = { ...this.defaultAttributes, ...attributes }
     this.assignAttributes(attributes)
     this.requestedAttributes = requestedAttributes
