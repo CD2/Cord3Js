@@ -96,6 +96,7 @@ export default function attribute(target, name, descriptor = {}) {
           throw new Error("cant modify persisted attributes without having them loaded")
         }
       }
+      console.log('asdasdasdasd', this, this.changes)
       this.changes.set(name, val)
     }
   }
