@@ -1,5 +1,5 @@
-var path = require("path");
-var webpack = require("webpack");
+var path = require("path")
+var webpack = require("webpack")
 
 module.exports = {
   //   entry: ["babel-polyfill", "./src/index.js"],
@@ -8,11 +8,12 @@ module.exports = {
     path: path.resolve(__dirname, "build"),
     filename: "script.js",
     publicPath: "/",
-    libraryTarget: 'commonjs2'
+    library: "@cd2/cord",
+    libraryTarget: "umd",
   },
   devServer: {
     contentBase: "./build",
-    hot: true
+    hot: true,
   },
   target: "node",
   module: {
@@ -26,13 +27,17 @@ module.exports = {
             "transform-object-rest-spread",
             "transform-decorators-legacy",
             "transform-class-properties",
-            "transform-do-expressions"
-          ]
-        }
-      }
-    ]
+            "transform-do-expressions",
+          ],
+        },
+      },
+    ],
   },
   stats: {
-    colors: true
-  }
-};
+    colors: true,
+  },
+  externals: {
+    react: "commonjs react",
+    "react-dom": "commonjs react-dom",
+  },
+}
