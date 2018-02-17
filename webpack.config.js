@@ -7,7 +7,8 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "build"),
     filename: "script.js",
-    publicPath: "/"
+    publicPath: "/",
+    libraryTarget: 'commonjs2'
   },
   devServer: {
     contentBase: "./build",
