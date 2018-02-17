@@ -1,8 +1,8 @@
 {
   "name": "@cd2/cord",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "web cord to manage the cord api",
-  "module": "src/index.js",
+  "main": "build/script.js",
   "scripts": {
     "build": "webpack",
     "prepublish": "npm run build"
