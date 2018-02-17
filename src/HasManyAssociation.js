@@ -143,7 +143,7 @@ export default class HasManyAssociation extends Collection {
         this._unsavedRecords.push(id_or_record)
       }
     } else {
-      this.owner[this.options.foreignKey].push(id)
+      this.owner[this.options.foreignKey].push(id_or_record)
     }
   }
 
