@@ -148,6 +148,12 @@ export default class Collection {
   async count() {
     return (await this.ids()).length
   }
+  async any() {
+    return (await this.count()) > 0
+  }
+  async empty() {
+    return (await this.count()) === 0
+  }
   async forEach(cb) {
     const ids = await this.ids()
     ids.forEach((id, i) => {

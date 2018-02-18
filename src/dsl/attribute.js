@@ -143,3 +143,17 @@ export default function attribute(target, name, descriptor = {}) {
   // override default descriptor
   return {}
 }
+
+// @attrubute formattedAddress = {
+//   requestedAttribute: ['address_line_1', 'address_line_2'],
+//   install(model) {
+//     attribute(model, address_line_1)
+//     attribute(model, address_line_2)
+//   },
+//   get() {
+//     return this.address_line_1
+//   },
+//   set(val) {
+
+//   },
+// }
