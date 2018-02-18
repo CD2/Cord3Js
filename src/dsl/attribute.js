@@ -1,8 +1,7 @@
 class Attribute {
   configurable = true
 
-  static get(record, name, options) {
-    console.log(record, name, options)
+  static get(record, name, { defaultValue }) {
     if (record.changes.has(name)) {
       return record.changes.get(name)
     } else {
@@ -12,7 +11,7 @@ class Attribute {
         }
         return record.record.get(name)
       } else {
-        return record.defaultAttributes[name]
+        return defaultValue
       }
     }
   }
@@ -52,9 +51,18 @@ class DateAttribute extends Attribute {
   }
 }
 
+class PriceAttribute extends Attribute {
+  static install(model, name, options) {
+    super.install(model, name, options)
+    super.install(model, `${name}_currency`)
+    super.install(model, `${name}_price`)
+  }
+}
+
 const attributeTypes = {
   default: Attribute,
   date: DateAttribute,
+  price: PriceAttribute,
 }
 
 export default function attribute(target, name, descriptor = {}) {
@@ -96,7 +104,7 @@ export default function attribute(target, name, descriptor = {}) {
           throw new Error("cant modify persisted attributes without having them loaded")
         }
       }
-      console.log('asdasdasdasd', this, this.changes)
+      console.log("asdasdasdasd", this, this.changes)
       this.changes.set(name, val)
     }
   }
