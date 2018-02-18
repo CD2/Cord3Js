@@ -9,7 +9,14 @@ export default BaseCls =>
     }
 
     _attributesForSaveWithValues() {
-      return this.changes.toJS()
+      let attrs = this.changes.toJS()
+      this.class.additionalAttributesToSave.forEach(a => {
+        const value = this[a].serialize()
+        if (value) {
+          attrs = { ...attrs, ...value }
+        }
+      })
+      return attrs
     }
 
     async save() {
@@ -63,7 +70,7 @@ export default BaseCls =>
     }
 
     async destroy() {
-      if (!this.persisted) throw new Error('YO CANT DELETE THIS - ITS NOT REALLY THERE YET')
+      if (!this.persisted) throw new Error("YO CANT DELETE THIS - ITS NOT REALLY THERE YET")
       await this.runCallbacks("beforeDestroy")
       const { data, errors } = await this.perform(`destroy`)
       if (errors.length > 0) {

@@ -176,8 +176,7 @@ export default class Model {
   }
 
   static find(id, attrs = []) {
-    const requestedAttributes = [...this.defaultRequestAttributes, ...attrs]
-    const modelRequest = new ModelRequest(this, id, requestedAttributes)
+    const modelRequest = new ModelRequest(this, id, attrs)
     return modelRequest.load()
   }
 
@@ -194,9 +193,28 @@ export default class Model {
   static last(...args) {
     return this.all().last(...args)
   }
+
+  static get requestedAttributeAliases() {
+    if (!(`_requestedAttributeAliases_${this.name}` in this)) {
+      this[`_requestedAttributeAliases_${this.name}`] = {}
+    }
+    return this[`_requestedAttributeAliases_${this.name}`]
+  }
+  static get additionalAttributesToSave() {
+    if (!(`_additionalAttributesToSave_${this.name}` in this)) {
+      this[`_additionalAttributesToSave_${this.name}`] = []
+    }
+    return this[`_additionalAttributesToSave_${this.name}`]
+  }
 }
 
 // Model.attributes = ['created_at', 'updated_at']
+
+import { depricationWarning } from "../../utils"
+
+const complexRequestedAttributeDepricationWarning = depricationWarning(
+  "requesting associations attributes directly is depricated. please use withAttributes on the assocaition instead.",
+)
 
 class ModelRequest {
   constructor(model, id, attrs) {
@@ -205,8 +223,30 @@ class ModelRequest {
     this.attrs = attrs
   }
 
+  processAttrs() {
+    let processedAttrs = []
+    this.attrs.forEach(attr => {
+      if (typeof attr != "string") {
+        complexRequestedAttributeDepricationWarning()
+        return
+      }
+      const aliases = this.model.requestedAttributeAliases[attr]
+      if (aliases !== undefined) {
+        if (Array.isArray(aliases)) {
+          processedAttrs = processedAttrs.concat(aliases)
+        } else {
+          processedAttrs.push(aliases)
+        }
+      } else {
+        processedAttrs.push(attr)
+      }
+    })
+    return processedAttrs
+  }
+
   async load() {
     const { id, attrs } = this
+    const processedAttrs = this.processAttrs()
     const { apiName, tableName } = this.model
 
     const record = this.model.new()
@@ -216,7 +256,7 @@ class ModelRequest {
     try {
       const request = await this.model.store.findRecord(apiName, tableName, {
         id,
-        attributes: this.attrs,
+        attributes: processedAttrs,
       })
       if (request.errors && request.errors.length) {
         throw request.errors

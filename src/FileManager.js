@@ -23,6 +23,9 @@ export default class FileManager {
     attribute(model, `${name}_uid`)
     attribute(model, `${name}_name`)
 
+    model.requestedAttributeAliases[`image`] = [`image_name`, `image_uid`]
+    model.additionalAttributesToSave.push(`image`)
+
     Object.defineProperty(model.prototype, name, {
       get() {
         if (!this[`_${name}`]) {
@@ -38,7 +41,7 @@ export default class FileManager {
     // ${name}_url()
     Object.defineProperty(model.prototype, `${name}_url`, {
       set(val) {
-        this.image.setUrl(val)
+        this[`name`].setUrl(val)
       },
     })
   }
@@ -110,7 +113,7 @@ export default class FileManager {
   }
 
   get rawUid() {
-    return this.record[this.fieldName]
+    return this.record[`${this.fieldName}_uid`]
   }
 
   get url() {
