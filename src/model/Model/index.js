@@ -64,12 +64,9 @@ export default class Model {
   static defaultRequestAttributes = []
   static associations = []
   _id = undefined
-  defaultAttributes = {}
   changes = observable.map()
 
   constructor(attributes = {}, requestedAttributes) {
-    console.log(this.changes)
-    attributes = { ...this.defaultAttributes, ...attributes }
     this.assignAttributes(attributes)
     this.requestedAttributes = requestedAttributes
 

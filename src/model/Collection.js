@@ -1,79 +1,16 @@
 import Ids from "./Ids"
-
-// export default class Collection {
-
-//   constructor(model, idsOrScope, attributes) {
-//     this.model = model
-//     this.attributes = attributes
-//     if (Array.isArray(idsOrScope)) {
-//       this._ids = idsOrScope
-//     } else {
-//       this._scope = idsOrScope
-//     }
-//   }
-//   sort(val) { this._scope.sort = val; this._onChange() }
-//   _onChange() { }
-//   onChange(cb) { this._onChange = cb; return () => { } }
-//   async ids() {
-//     if (this._ids) return this._ids
-//     return new Ids(this.model, this._scope).ids()
-//   }
-//   async all() { return this.map(record => record) }
-//   async first(n = 1) {
-//     let ids = await this.ids()
-//     ids = ids.slice(0, n)
-//     const records = ids.map(id => {
-//       return this.model.find(id, this.attributes)
-//     })
-//     if (n === 1) return records[0]
-//     return records
-//   }
-//   async last(n = 1) {
-//     let ids = await this.ids()
-//     ids = ids.slice(ids.length - n)
-//     const records = ids.map(id => {
-//       return this.model.find(id, this.attributes)
-//     })
-//     if (n === 1) return records[0]
-//     return records
-//   }
-//   async count() {
-//     return (await this.ids()).length
-//   }
-//   async forEach(cb) {
-//     this.map(cb)
-//   }
-//   async map(cb) {
-//     const ids = await this.ids()
-//     return ids.map(id => {
-//       const record = this.model.find(id, this.attributes)
-//       return cb(record)
-//     })
-//   }
-//   async pluck(...attrs) {
-//     const ids = await this.ids()
-//     const data = ids.map(async id => {
-//       const record = await this.model.store.findRecord(
-//         this.model.apiName,
-//         this.model.tableName,
-//         { id, attributes: attrs })
-
-//       if (attrs.length === 1) {
-//         return record.data.get(attrs[0])
-//       }
-//       return attrs.map(attr => record.data.get(attr))
-//     })
-
-//     return await Promise.all(data)
-//   }
-
-// }
+import { observable } from "mobx"
 
 export default class Collection {
   constructor(model) {
     this.model = model
   }
 
+  @observable _sort
+  @observable _query
+  @observable _scope
+  @observable _limit
+  @observable _offset = 0
   // SCOPING
 
   _withAttributes = []
@@ -100,6 +37,26 @@ export default class Collection {
     this.triggerChange()
     return this
   }
+  limit(val) {
+    this._limit = val
+    this.triggerChange()
+    return this
+  }
+  unlimit() {
+    this._limit = undefined
+    this.triggerChange()
+    return this
+  }
+  offset(val) {
+    this._offset = val
+    this.triggerChange()
+    return this
+  }
+  unoffset() {
+    this._offset = undefined
+    this.triggerChange()
+    return this
+  }
   // TODO: isScoped() returns if there is a scope on the collection e.g. sorting or a query
   dup() {
     const dupped = new this.constructor(this.model)
@@ -107,6 +64,8 @@ export default class Collection {
     dupped._sort = this._sort
     dupped._query = this._query
     dupped._scope = this._scope
+    dupped._limit = this._limit
+    dupped._offset = this._offset
     return dupped
   }
 
@@ -136,8 +95,17 @@ export default class Collection {
       query: this._query,
       scope: this._scope,
     }
+    const { _limit, _offset = 0 } = this
+
     if (!this._allIds) {
       this._allIds = await new Ids(this.model, scope).ids()
+    }
+
+    if (_limit) {
+      return this._allIds.slice(_offset, _offset + _limit)
+    }
+    if (_offset) {
+      return this._allIds.slice(_offset)
     }
     return this._allIds
   }

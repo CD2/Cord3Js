@@ -9,7 +9,6 @@ const attributeDepricationWarning = depricationWarning(
 export default BaseCls =>
   class extends BaseCls {
     assignAttributes(attrs) {
-      console.log(this.changes, this)
       Object.entries(attrs).forEach(([key, value]) => (this[key] = value))
     }
 
