@@ -82,30 +82,14 @@ export default function attribute(target, name, descriptor = {}) {
 
   function defaultGetter(name) {
     return function() {
-      if (this.changes.has(name)) {
-        return this.changes.get(name)
-      } else {
-        if (this.persisted) {
-          if (!this.record.data.has(name)) {
-            throw new Error(`attribute not loaded: ${name}`)
-          }
-          return this.record.get(name)
-        } else {
-          return this.defaultAttributes[name]
-        }
-      }
+      console.log("default getter", this)
+      return Attribute.get(this, name, {})
     }
   }
 
   function defaultSetter(name) {
     return function(val) {
-      if (this.persisted) {
-        if (!this.record.data.has(name)) {
-          throw new Error("cant modify persisted attributes without having them loaded")
-        }
-      }
-      console.log("asdasdasdasd", this, this.changes)
-      this.changes.set(name, val)
+      Attribute.set(this, name, val)
     }
   }
 
