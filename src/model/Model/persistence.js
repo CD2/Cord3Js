@@ -11,10 +11,11 @@ export default BaseCls =>
     _attributesForSaveWithValues() {
       let attrs = this.changes.toJS()
       this.class.additionalAttributesToSave.forEach(a => {
-        const value = this[a].serialize()
-        if (value) {
-          attrs = { ...attrs, ...value }
-        }
+        if(this[a]) {
+          const value = this[a].serialize()
+          if (value) {
+            attrs = { ...attrs, ...value }
+          }}
       })
       return attrs
     }
