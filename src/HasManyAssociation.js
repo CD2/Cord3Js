@@ -18,7 +18,7 @@ export default class HasManyAssociation extends Collection {
     }
     model.associations.push(options)
 
-    attribute(model, foreignKey)
+    attribute(model, foreignKey, { defaultValue: [] })
 
     Object.defineProperty(model.prototype, name, {
       get() {
