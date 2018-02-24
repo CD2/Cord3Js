@@ -3,12 +3,16 @@ import Collection from "../Collection"
 import { mixin } from "../../module"
 import { observable } from "mobx"
 class ModelBuilder {
-  constructor(model, requestedAttributes) {
+  constructor(model, requestedAttributes = []) {
     this.model = model
     this.requestedAttributes = requestedAttributes
   }
 
-  // COMMENT SIX: This is sometimes used for look ups - it will eventually be good
+  withAttributes(attrs) {
+    this.requestedAttributes = this.requestedAttributes.concat(attrs)
+    return this
+  }
+
   new(attrs) {
     const record = new this.model(attrs)
     record.requestedAttributes = this.requestedAttributes
@@ -16,23 +20,23 @@ class ModelBuilder {
   }
 
   find(id) {
-    return this.model.find(id, this.requestedAttributes)
+    return loadRecord(this.model, id, this.requestedAttributes)
   }
   all() {
     return this.model
-      .Collection()
+      .all()
       .withAttributes(this.requestedAttributes)
       .all()
   }
   first() {
     return this.model
-      .Collection()
+      .all()
       .withAttributes(this.requestedAttributes)
       .first()
   }
   last() {
     return this.model
-      .Collection()
+      .all()
       .withAttributes(this.requestedAttributes)
       .last()
   }
@@ -43,7 +47,6 @@ import CallbacksModule from "./callbacks"
 import AttributesModule from "./attributes"
 import PersistenceModule from "./persistence"
 import ValidationsModule from "./validations"
-import RecordModule from "./record"
 
 // @mixin(
 //   BaseClass =>
@@ -59,7 +62,6 @@ import RecordModule from "./record"
 @mixin(AttributesModule)
 @mixin(PersistenceModule)
 @mixin(ValidationsModule)
-@mixin(RecordModule)
 export default class Model {
   static defaultRequestAttributes = []
   static associations = []
@@ -77,6 +79,13 @@ export default class Model {
 
   static new(...args) {
     return new this(...args)
+  }
+
+  get newRecord() {
+    return this._id === undefined
+  }
+  get persisted() {
+    return !this.newRecord
   }
 
   static withAttributes(requested) {
@@ -102,7 +111,7 @@ export default class Model {
   withAttributes(attrs) {
     if (this.persisted) {
       const newAttrs = [...this.requestedAttributes, ...attrs]
-      return this.class.find(this.id, newAttrs)
+      return this.class.withAttributes(newAttrs).find(this.id)
     }
     this.requestedAttributes = this.requestedAttributes.concat(attrs)
     return this
@@ -121,21 +130,12 @@ export default class Model {
     const { apiName, tableName } = this.class
     this.loading = true
 
-    try {
-      const request = await this.class.store.findRecord(apiName, tableName, {
-        id,
-        attributes: requestedAttributes,
-      })
-      if (request.errors && request.errors.length) {
-        throw request.errors
-      } else {
-        this.loading = false
-        this.loaded = true
-      }
-    } catch (err) {
-      this.errored = true
-      this.loading = false
-      throw err
+    const request = await this.class.store.findRecord(apiName, tableName, {
+      id,
+      attributes: requestedAttributes,
+    })
+    if (request.errors && request.errors.length) {
+      throw request.errors
     }
   }
 
@@ -149,10 +149,6 @@ export default class Model {
 
   toJSON() {
     return this.attributeValues.toJS()
-    return Object.values(this.attributes).reduce((acc, attr) => {
-      acc[attr.name] = attr.get()
-      return acc
-    }, {})
   }
 
   async perform(action, data) {
@@ -176,8 +172,8 @@ export default class Model {
   }
 
   static find(id, attrs = []) {
-    const modelRequest = new ModelRequest(this, id, attrs)
-    return modelRequest.load()
+    if (attrs.length > 0) passingAttributesAsSecondArgumentToFindDepricationWarning()
+    return new ModelBuilder(this).withAttributes(attrs).find(id)
   }
 
   static collection() {
@@ -213,62 +209,43 @@ export default class Model {
 import { depricationWarning } from "../../utils"
 
 const complexRequestedAttributeDepricationWarning = depricationWarning(
-  "requesting associations attributes directly is depricated. please use withAttributes on the assocaition instead.",
+  `requesting associations attributes directly is depricated. please use withAttributes on the assocaition instead.`,
+)
+const passingAttributesAsSecondArgumentToFindDepricationWarning = depricationWarning(
+  `Passing requested arguments to find is depricated. Please use withAttributes instead`,
 )
 
-class ModelRequest {
-  constructor(model, id, attrs) {
-    this.model = model
-    this.id = id
-    this.attrs = attrs
-  }
-
-  processAttrs() {
-    let processedAttrs = []
-    this.attrs.forEach(attr => {
-      if (typeof attr != "string") {
-        complexRequestedAttributeDepricationWarning()
-        return
-      }
-      const aliases = this.model.requestedAttributeAliases[attr]
-      if (aliases !== undefined) {
-        if (Array.isArray(aliases)) {
-          processedAttrs = processedAttrs.concat(aliases)
-        } else {
-          processedAttrs.push(aliases)
-        }
-      } else {
-        processedAttrs.push(attr)
-      }
-    })
-    return processedAttrs
-  }
-
-  async load() {
-    const { id, attrs } = this
-    const processedAttrs = this.processAttrs()
-    const { apiName, tableName } = this.model
-
-    const record = this.model.new()
-    record.requestedAttributes = attrs
-    record._id = id
-
-    try {
-      const request = await this.model.store.findRecord(apiName, tableName, {
-        id,
-        attributes: processedAttrs,
-      })
-      if (request.errors && request.errors.length) {
-        throw request.errors
-      } else {
-        record.loaded = true
-      }
-    } catch (err) {
-      record.errored = true
-      throw err
+async function loadRecord(model, id, attrs) {
+  let processedAttrs = []
+  attrs.forEach(attr => {
+    if (typeof attr != "string") {
+      complexRequestedAttributeDepricationWarning()
+      return
     }
-    record.loading = false
+    const aliases = model.requestedAttributeAliases[attr]
+    if (aliases !== undefined) {
+      if (Array.isArray(aliases)) {
+        processedAttrs = processedAttrs.concat(aliases)
+      } else {
+        processedAttrs.push(aliases)
+      }
+    } else {
+      processedAttrs.push(attr)
+    }
+  })
 
-    return record
+  const { apiName, tableName } = model
+
+  const request = await model.store.findRecord(apiName, tableName, {
+    id,
+    attributes: processedAttrs,
+  })
+  if (request.errors && request.errors.length) {
+    throw request.errors
   }
+
+  const record = model.new()
+  record.requestedAttributes = attrs
+  record._id = id
+  return record
 }

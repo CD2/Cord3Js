@@ -1,13 +1,14 @@
+export default function validates(target, name, descriptor) {
+  const { on, if: ifCallback, ...validators } = descriptor.initializer()
+  const validations = Object.entries(validators).map(([validator, options]) => {
+    if (options === true) options = {}
+    options.attribute = name
+    return { validator, on, if: ifCallback, options }
+  })
+  target.constructor._validators[name] = validations
 
-export default function validates(target, name, desc) {
-  if (desc.initializer) {
-    const curValidations = target.validations.fields[name] || {}
-    target.validations.fields[name] = {
-      ...curValidations,
-      ...desc.initializer(),
-    }
-  } else {
-    target.validations.funcs.push(desc.value)
-  }
-  return { configurable: true }
+  descriptor.configurable = true
+  delete descriptor.value
+  delete descriptor.initializer
+  return null
 }
