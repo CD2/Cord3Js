@@ -23,7 +23,7 @@ export default class Store {
   registerModel(model) {
     model.store = this
     // if (model.name in this.models) throw new CordError('Two models have the same name!')
-    this.models[model.name] = model
+    this.models[model.className] = model
   }
 
   getModel(modelName) {

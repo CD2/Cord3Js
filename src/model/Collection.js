@@ -113,12 +113,13 @@ export default class Collection {
   async find(id) {
     const ids = await this.ids()
     if (!ids.includes(id)) throw "record not found error"
-    return this.model.find(id, this._withAttributes)
+    return this.model.withAttributes(this._withAttributes).find(id)
   }
 
   async records() {
     const ids = await this.ids()
-    const records = ids.map(id => this.model.find(id, this._withAttributes))
+    const driver = this.model.withAttributes(this._withAttributes)
+    const records = ids.map(id => driver.find(id))
     return Promise.all(records)
   }
   all() {

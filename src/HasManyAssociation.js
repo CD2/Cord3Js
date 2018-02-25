@@ -67,8 +67,24 @@ export default class HasManyAssociation extends Collection {
     let ids = persistedIds.concat(this._unsavedIds)
 
     // if this.isScoped() {
+    const { _limit, _offset=0 } = this
+
+    this._limit = undefined
+    this._offset = undefined
     const scopedIds = await super.ids()
+    this._limit = _limit
+    this._offset = _offset
+
     ids = scopedIds.filter(id => ids.includes(id))
+
+    if (_limit) {
+      ids = ids.slice(_offset, _offset + _limit)
+    }
+    if (_offset) {
+      ids = ids.slice(_offset)
+    }
+
+
     // }
     return ids
   }

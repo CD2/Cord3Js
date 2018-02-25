@@ -6,6 +6,7 @@
     "no-constant-condition": 1,
     "no-unreachable": [1],
     "import/first": 1,
+    "no-debugger": 0,
     "import/extensions": [
       1,
       "never",

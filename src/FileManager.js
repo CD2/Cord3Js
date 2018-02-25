@@ -23,8 +23,8 @@ export default class FileManager {
     attribute(model, `${name}_uid`)
     attribute(model, `${name}_name`)
 
-    model.requestedAttributeAliases[`image`] = [`image_name`, `image_uid`]
-    model.additionalAttributesToSave.push(`image`)
+    model.requestedAttributeAliases[`${name}`] = [`${name}_name`, `${name}_uid`]
+    model.additionalAttributesToSave.push(`${name}`)
 
     Object.defineProperty(model.prototype, name, {
       get() {

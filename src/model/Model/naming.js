@@ -1,10 +1,14 @@
 
-import { pluralize, humanize } from "help-my-strings"
+import { pluralize } from "help-my-strings"
 
 export default BaseCls => class extends BaseCls {
 
   static get className() {
-    return this.name
+    return this._className || this.name
+  }
+
+  static set className(val) {
+    this._className = val
   }
 
   static get tableName() {
