@@ -68,7 +68,7 @@ export default BaseClass =>
     }
 
     validationsFor(attr) {
-      return this.class._validators[attr]
+      return this.class._validators[attr] || []
     }
 
     errors = {
