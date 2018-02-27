@@ -1,6 +1,9 @@
 import Validator from "./Validator"
 
 export default class FormatValidator extends Validator {
+
+  static validationName = 'format'
+
   defaultOptions = {
     with: {
       test: () => {

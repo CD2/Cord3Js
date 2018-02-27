@@ -67,7 +67,7 @@ export default class HasManyAssociation extends Collection {
     let ids = persistedIds.concat(this._unsavedIds)
 
     // if this.isScoped() {
-    const { _limit, _offset=0 } = this
+    const { _limit, _offset = 0 } = this
 
     this._limit = undefined
     this._offset = undefined
@@ -83,7 +83,6 @@ export default class HasManyAssociation extends Collection {
     if (_offset) {
       ids = ids.slice(_offset)
     }
-
 
     // }
     return ids
@@ -104,7 +103,9 @@ export default class HasManyAssociation extends Collection {
     this._unsavedRecords.push(record)
 
     record.afterCreate("adding newly created association", record => {
-      this.push(record)
+      this.owner.record.update({
+        [this.options.foreignKey]: this.owner[this.options.foreignKey].concat(record.id),
+      })
       this._unsavedRecords = this._unsavedRecords.filter(r => r !== record)
     })
 
