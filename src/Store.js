@@ -101,7 +101,10 @@ export default class Store {
     this.request.addRecords(api, [id], attributes)
 
     const response = await this.request
+    console.log('recordResponse', response)
+
     const recordResponse = response.findRecordById(tableName, id)
+    console.log('recordResponse', recordResponse)
     if (!recordResponse) throw new RecordNotFoundError()
     return recordResponse
   }
