@@ -27,20 +27,22 @@ export default class Response {
   }
 
   findRecordById(table, needleId) {
+    const { aliases } = this.for(table)
+    let lookupId = (aliases && aliases[needleId]) || needleId
     const records = this.recordsFor(table)
-    return records.find(({ id }) => id == needleId)
+    return records.find(({ id }) => id == lookupId)
   }
 
-  findIds(table, _id = "_") {
+  findIds(table, _id = `_`) {
     return this.idsFor(table)[_id]
   }
 
   get tables() {
-    return this._response.filter(({ table }) => table !== "_errors")
+    return this._response.filter(({ table }) => table !== `_errors`)
   }
 
   get errors() {
-    const errors = this._response.filter(({ table }) => table === "_errors")
+    const errors = this._response.filter(({ table }) => table === `_errors`)
     if (errors && errors._errors == true) return errors._errors
   }
 }
