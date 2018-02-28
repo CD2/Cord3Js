@@ -27,7 +27,12 @@ export default BaseClass =>
         return false
       }
 
-      const validatableAttributes = [`name`]
+      let validatableAttributes
+      validatableAttributes = Object.keys(this.class._validators)
+      // if (this.newRecord) {
+      // } else {
+      //   validatableAttributes = this.changes.keys().slice(0)
+      // }
       const context = this.newRecord ? `create` : `update`
 
       const attributeValidionPromises = validatableAttributes.map(async attr => {
@@ -35,7 +40,6 @@ export default BaseClass =>
 
         //filter the validations
         const applicableValidations = validations.reduce((acc, val) => {
-          console.log(val)
           if (val.on && val.on !== context) return acc
           if (val.if) {
             const ifCallback = typeof val.if === "string" ? this[val.if] : val.if

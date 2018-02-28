@@ -2,6 +2,9 @@
 import Validator from "./Validator"
 
 export default class EmailValidator extends Validator {
+
+  static validationName = 'email'
+
   defaultMessage = `must be a valid email`
 
   validate(record) {
@@ -11,7 +14,7 @@ export default class EmailValidator extends Validator {
         value,
       )
     ) {
-      record.errors.add(this.attribute, this.message)
+      record.errors.add(this.options.attribute, this.message)
     }
   }
 }

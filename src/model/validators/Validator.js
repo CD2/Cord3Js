@@ -1,7 +1,5 @@
 export default class Validator {
-  static get validationName() {
-    return this.name.replace(/Validator$/, "").toLowerCase()
-  }
+
   defaultOptions = {}
   constructor({ message, ...options } = {}) {
     this.customMessage = message

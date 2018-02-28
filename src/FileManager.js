@@ -67,8 +67,10 @@ export default class FileManager {
     })
   }
 
+  static baseUrl = 'http://localhost:3000/image?'
+
   buildUrl(size) {
-    let url = `http://localhost:3000/image?`
+    let url = this.constructor.baseUrl
     url += `uid=${this.rawUid}`
     if (size) url += `&size=${size}`
     return url
