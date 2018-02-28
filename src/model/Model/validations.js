@@ -28,11 +28,11 @@ export default BaseClass =>
       }
 
       let validatableAttributes
-      if (this.newRecord) {
-        validatableAttributes = Object.keys(this.class._validators)
-      } else {
-        validatableAttributes = this.changes.keys().slice(0)
-      }
+      validatableAttributes = Object.keys(this.class._validators)
+      // if (this.newRecord) {
+      // } else {
+      //   validatableAttributes = this.changes.keys().slice(0)
+      // }
       const context = this.newRecord ? `create` : `update`
 
       const attributeValidionPromises = validatableAttributes.map(async attr => {
