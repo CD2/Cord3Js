@@ -177,7 +177,7 @@ export default class Model {
   }
 
   static collection() {
-    console.warn("DEPRICATED: please change all calls from .collection() to .all() ")
+    console.warn(`DEPRICATED: please change all calls from .collection() to .all() `)
     return this.all()
   }
   static all() {
@@ -218,7 +218,7 @@ const passingAttributesAsSecondArgumentToFindDepricationWarning = depricationWar
 async function loadRecord(model, id, attrs) {
   let processedAttrs = []
   attrs.forEach(attr => {
-    if (typeof attr != "string") {
+    if (typeof attr != `string`) {
       complexRequestedAttributeDepricationWarning()
       return
     }

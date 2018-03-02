@@ -1,5 +1,4 @@
 export default class Validator {
-
   defaultOptions = {}
   constructor({ message, ...options } = {}) {
     this.customMessage = message

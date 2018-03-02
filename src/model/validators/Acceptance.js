@@ -1,8 +1,7 @@
 import Validator from "./Validator"
 
 export default class AcceptanceValidator extends Validator {
-
-  static validationName = 'acceptance'
+  static validationName = `acceptance`
 
   defaultMessage = `must be accepted`
 

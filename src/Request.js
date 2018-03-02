@@ -1,8 +1,7 @@
 import { action } from "mobx"
-import { uid } from './utils'
+import { uid } from "./utils"
 
 export default class Request {
-
   request = {}
   onSuccessCallbacks = []
   onErrorCallbacks = []
@@ -13,24 +12,33 @@ export default class Request {
 
   __promise = null
   toPromise() {
-    return this.__promise || do {
-      this.__promise = new Promise((resolve, reject) => {
-        this.resolve = resolve
-        this.reject = reject
-      }).then(response => {
-        this.resolve = () => {}
-        this.reject = () => {}
-        return response
-      }).catch(error => {
-        this.resolve = () => {}
-        this.reject = () => {}
-        throw error
-      })
-    }
+    return (
+      this.__promise ||
+      do {
+        this.__promise = new Promise((resolve, reject) => {
+          this.resolve = resolve
+          this.reject = reject
+        })
+          .then(response => {
+            this.resolve = () => {}
+            this.reject = () => {}
+            return response
+          })
+          .catch(error => {
+            this.resolve = () => {}
+            this.reject = () => {}
+            throw error
+          })
+      }
+    )
   }
 
-  then(cb) { return this.toPromise().then(cb) }
-  catch(cb) { return this.toPromise().catch(cb) }
+  then(cb) {
+    return this.toPromise().then(cb)
+  }
+  catch(cb) {
+    return this.toPromise().catch(cb)
+  }
   resolve() {} // stubs; overridden in `toPromise`
   reject() {} // stubs; overridden in `toPromise`
 
@@ -92,21 +100,17 @@ export default class Request {
   */
 
   toJSON() {
-    const compiled = Object.entries(this.request).reduce(
-      (compiled, [api, request]) => {
-        const subRequest = {}
-        subRequest.api = api
-        if (request.ids) subRequest.ids = request.ids
-        if (request.records) subRequest.records = request.records
-        if (request.actions) subRequest.actions = request.actions
-        compiled.push(subRequest)
-        return compiled
-      },
-      [],
-    )
+    const compiled = Object.entries(this.request).reduce((compiled, [api, request]) => {
+      const subRequest = {}
+      subRequest.api = api
+      if (request.ids) subRequest.ids = request.ids
+      if (request.records) subRequest.records = request.records
+      if (request.actions) subRequest.actions = request.actions
+      compiled.push(subRequest)
+      return compiled
+    }, [])
     return compiled
     // return objectToFormData(compiled)
   }
-
 }
-import objectToFormData from 'object-to-formdata'
+import objectToFormData from "object-to-formdata"

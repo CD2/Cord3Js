@@ -4,22 +4,20 @@ class Attribute {
   static get(record, name, { defaultValue }) {
     if (record.changes.has(name)) {
       return record.changes.get(name)
-    } else {
-      if (record.persisted) {
-        if (!record.record.data.has(name)) {
-          throw new Error(`attribute not loaded: ${name}`)
-        }
-        return record.record.get(name)
-      } else {
-        return defaultValue
-      }
     }
+    if (record.persisted) {
+      if (!record.record.data.has(name)) {
+        throw new Error(`attribute not loaded: ${name}`)
+      }
+      return record.record.get(name)
+    }
+    return defaultValue
   }
 
   static set(record, name, val, options) {
     if (record.persisted) {
       if (!record.record.data.has(name)) {
-        throw new Error("cant modify persisted attributes without having them loaded")
+        throw new Error(`cant modify persisted attributes without having them loaded`)
       }
     }
     record.changes.set(name, val)
@@ -66,7 +64,7 @@ const attributeTypes = {
 }
 
 export default function attribute(target, name, descriptor = {}) {
-  if (name === "id") throw new Error("STOP SETTING `id` AS AN ATTRIBUTE")
+  if (name === `id`) throw new Error(`STOP SETTING \`id\` AS AN ATTRIBUTE`)
   if (target instanceof Function) target = target.prototype
 
   function createMethodWithSuper(method, sup) {
@@ -82,7 +80,7 @@ export default function attribute(target, name, descriptor = {}) {
 
   function defaultGetter(name) {
     return function() {
-      console.log("default getter", this)
+      console.log(`default getter`, this)
       return Attribute.get(this, name, {})
     }
   }
@@ -97,12 +95,12 @@ export default function attribute(target, name, descriptor = {}) {
 
   if (initializer) {
     //TODO: need check if initializer is object or other object
-    const { type = "default", ...otherOptions } = initializer()
+    const { type = `default`, ...otherOptions } = initializer()
     const AttributeClass = attributeTypes[type]
 
     AttributeClass.install(target, name, otherOptions)
   } else if (value) {
-    throw new Error("Attributes as functions not supported")
+    throw new Error(`Attributes as functions not supported`)
   } else if (get || set) {
     // define getter and setter on target but add the functions super into context
     const attributeDescriptor = {

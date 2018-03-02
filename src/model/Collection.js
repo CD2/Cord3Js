@@ -70,10 +70,10 @@ export default class Collection {
   }
 
   get sortedColumn() {
-    return this._sort ? this._sort.split(" ")[0] : undefined
+    return this._sort ? this._sort.split(` `)[0] : undefined
   }
   get sortedDir() {
-    return this._sort ? this._sort.split(" ")[1] : undefined
+    return this._sort ? this._sort.split(` `)[1] : undefined
   }
 
   _onChangeCallbacks = []
@@ -112,7 +112,7 @@ export default class Collection {
 
   async find(id) {
     const ids = await this.ids()
-    if (!ids.includes(id)) throw "record not found error"
+    if (!ids.includes(id)) throw `record not found error`
     return this.model.withAttributes(this._withAttributes).find(id)
   }
 
@@ -133,18 +133,16 @@ export default class Collection {
     ids = ids.slice(0, n)
     if (n === 1) {
       return this.model.find(ids[0], this._withAttributes)
-    } else {
-      return ids.map(id => this.model.find(id, this._withAttributes))
     }
+    return ids.map(id => this.model.find(id, this._withAttributes))
   }
   async last(n = 1) {
     let ids = await this.ids()
     ids = ids.slice(-n)
     if (n === 1) {
       return this.model.find(ids[0], this._withAttributes)
-    } else {
-      return ids.map(id => this.model.find(id, this._withAttributes))
     }
+    return ids.map(id => this.model.find(id, this._withAttributes))
   }
   async count() {
     return (await this.ids()).length

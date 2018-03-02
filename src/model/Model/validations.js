@@ -42,12 +42,13 @@ export default BaseClass =>
         const applicableValidations = validations.reduce((acc, val) => {
           if (val.on && val.on !== context) return acc
           if (val.if) {
-            const ifCallback = typeof val.if === "string" ? this[val.if] : val.if
+            const ifCallback = typeof val.if === `string` ? this[val.if] : val.if
             console.log(val, val.if)
-            if (typeof ifCallback !== "function")
+            if (typeof ifCallback !== `function`) {
               throw new Error(
                 `'${val.if}' is not a function. it is used in as the if of a validation`,
               )
+            }
             if (ifCallback.call(this, this) === false) return acc
           }
           return acc.concat(val)

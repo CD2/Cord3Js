@@ -27,7 +27,7 @@ export function depricationWarning(msg) {
   let hidden = false
   return () => {
     if (!hidden) {
-      console.warn("DEPRECIATION WARNING: ", msg)
+      console.warn(`DEPRECIATION WARNING: `, msg)
       hidden = true
     }
   }

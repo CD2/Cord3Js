@@ -19,6 +19,6 @@ export class IdsNotFoundError extends CordError {}
 // duh
 export class NotImplementedError extends CordError {
   constructor() {
-    super("not implemented")
+    super(`not implemented`)
   }
 }

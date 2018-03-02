@@ -3,7 +3,7 @@ import attribute from "../../dsl/attribute"
 import { depricationWarning } from "../../utils"
 
 const attributeDepricationWarning = depricationWarning(
-  "using static attributes to assign multiple attributes. Please use `@attribute name` syntax",
+  `using static attributes to assign multiple attributes. Please use \`@attribute name\` syntax`,
 )
 
 export default BaseCls =>

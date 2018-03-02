@@ -1,8 +1,7 @@
 import Validator from "./Validator"
 
 export default class PresenceValidator extends Validator {
-
-  static validationName = 'presence'
+  static validationName = `presence`
 
   defaultMessage = `is required`
 

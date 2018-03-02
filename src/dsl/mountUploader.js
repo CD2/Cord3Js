@@ -1,4 +1,4 @@
-import FileManager from '../FileManager'
+import FileManager from "../FileManager"
 
 export default function mountUploader(target, name, descriptor) {
   if (!(target instanceof Function)) target = target.constructor

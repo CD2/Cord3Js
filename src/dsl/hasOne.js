@@ -1,5 +1,4 @@
-import HasOneAssication from '../HasOneAssociation'
-
+import HasOneAssication from "../HasOneAssociation"
 
 export default function hasOne(target, name, descriptor) {
   if (!(target instanceof Function)) target = target.constructor

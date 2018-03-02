@@ -2,8 +2,7 @@
 import Validator from "./Validator"
 
 export default class EmailValidator extends Validator {
-
-  static validationName = 'email'
+  static validationName = `email`
 
   defaultMessage = `must be a valid email`
 

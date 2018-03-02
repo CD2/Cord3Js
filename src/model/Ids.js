@@ -1,7 +1,6 @@
-import { observable } from 'mobx'
+import { observable } from "mobx"
 
 export default class Ids {
-
   @observable loading = false
   @observable loaded = false
   @observable errored = false
@@ -13,8 +12,9 @@ export default class Ids {
       'all'
       { scope: 'all', sort: 'name ASC' }
       { scope: 'published', query: 'my search query' }
-  */ 
-  constructor(model, query={}) {
+  */
+
+  constructor(model, query = {}) {
     this.model = model
     this.query = query
   }
@@ -31,27 +31,41 @@ export default class Ids {
     return this.model.store
   }
 
-  get query() { return this._query }
+  get query() {
+    return this._query
+  }
   set query(val) {
-    if (typeof val === 'string') val = { scopes: [val] }
+    if (typeof val === `string`) val = { scopes: [val] }
     if (val.scope) {
       val.scopes = [val.scope]
       delete val.scope
     }
-    if (!val.scopes) val.scopes = ['all']
+    if (!val.scopes) val.scopes = [`all`]
     this._query = val
   }
 
-  get scopes() { return this.query.scopes }
-  set scopes(val) { this.query.scopes = Array.isArray(val) ? val : [val] }
+  get scopes() {
+    return this.query.scopes
+  }
+  set scopes(val) {
+    this.query.scopes = Array.isArray(val) ? val : [val]
+  }
 
-  get sort() { return this.query.sort }
-  set sort(val) { this.query.sort = val }
+  get sort() {
+    return this.query.sort
+  }
+  set sort(val) {
+    this.query.sort = val
+  }
 
-  get search() { return this.query.query }
-  set search(val) { this.query.query = val }
+  get search() {
+    return this.query.query
+  }
+  set search(val) {
+    this.query.query = val
+  }
 
-  async load({ reload=false }={}) {
+  async load({ reload = false } = {}) {
     this.loading = true
     const data = { ...this.query, reload }
     try {
@@ -59,7 +73,7 @@ export default class Ids {
       const ids = this.record.getData()
       this.idsArr = ids[this.scopes[0]] || []
       this.loaded = true
-    } catch(err) {
+    } catch (err) {
       throw err
       this.errored = true
     }
@@ -76,5 +90,4 @@ export default class Ids {
     await this.load()
     return this.idsArr
   }
-
 }

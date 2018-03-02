@@ -10,7 +10,7 @@ export default class HasOneAssication {
       name,
       model: foreignModelName,
       foreignKey,
-      type: "one",
+      type: `one`,
     }
     //
     // model.afterInitialize(record => {
@@ -56,11 +56,11 @@ export default class HasOneAssication {
   get requestedAttributes() {
     const { name } = this.options
     const r = (this.owner.requestedAttributes || []).find(el => {
-      if (typeof el === "string") return el === name
+      if (typeof el === `string`) return el === name
       return el[name]
     })
     if (r === undefined) return
-    if (typeof r === "string") return []
+    if (typeof r === `string`) return []
     return r[name]
   }
 

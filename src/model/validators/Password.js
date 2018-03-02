@@ -1,8 +1,7 @@
 import Validator from "./Validator"
 
 export default class PasswordValidator extends Validator {
-
-  static validationName = 'password'
+  static validationName = `password`
 
   defaultMessage = `must be at least 8 characters`
 

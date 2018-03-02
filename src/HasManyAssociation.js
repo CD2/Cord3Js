@@ -14,7 +14,7 @@ export default class HasManyAssociation extends Collection {
       model: foreignModelName,
       foreignKey,
       inverseOf,
-      type: "many",
+      type: `many`,
     }
     model.associations.push(options)
 
@@ -30,7 +30,7 @@ export default class HasManyAssociation extends Collection {
     })
   }
 
-  associationType = "hasMany"
+  associationType = `hasMany`
 
   constructor(owner, options) {
     const targetModel = owner.class.store.getModel(options.model)
@@ -102,7 +102,7 @@ export default class HasManyAssociation extends Collection {
     const record = this.targetModel.withAttributes(this._withAttributes).new(attrs)
     this._unsavedRecords.push(record)
 
-    record.afterCreate("adding newly created association", record => {
+    record.afterCreate(`adding newly created association`, record => {
       this.owner.record.update({
         [this.options.foreignKey]: this.owner[this.options.foreignKey].concat(record.id),
       })
@@ -111,7 +111,7 @@ export default class HasManyAssociation extends Collection {
 
     const { inverseOf } = this.options
     if (inverseOf) {
-      if (this.model.getAssociation(inverseOf).type === "many") {
+      if (this.model.getAssociation(inverseOf).type === `many`) {
         record[inverseOf].push(this.owner)
       } else {
         record[inverseOf] = this.owner
@@ -136,7 +136,7 @@ export default class HasManyAssociation extends Collection {
     return this
   }
   set(val) {
-    throw Error("Cant assign to has many assoc")
+    throw Error(`Cant assign to has many assoc`)
   }
   // serialize() { return }
   // async ids() {
@@ -154,7 +154,7 @@ export default class HasManyAssociation extends Collection {
     if (Model.isModel(id_or_record)) {
       if (id_or_record.persisted) {
         console.log(
-          "asdasdasd",
+          `asdasdasd`,
           this.owner,
           this.options.foreignKey,
           this.owner[this.options.foreignKey],
