@@ -1,5 +1,4 @@
 import { observable, action } from "mobx"
-
 import Record from "./Record"
 import Ids from "./Ids"
 

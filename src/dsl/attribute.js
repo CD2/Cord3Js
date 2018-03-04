@@ -80,7 +80,6 @@ export default function attribute(target, name, descriptor = {}) {
 
   function defaultGetter(name) {
     return function() {
-      console.log(`default getter`, this)
       return Attribute.get(this, name, {})
     }
   }

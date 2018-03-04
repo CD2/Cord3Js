@@ -1,12 +1,10 @@
 import { action } from "mobx"
 import { post } from "axios"
-
 import { Database } from "./db"
 import Request from "./Request"
 import Response from "./Response"
 import { uid } from "./utils"
 import { toJS } from "mobx"
-
 import { CordError, RecordNotFoundError, IdsNotFoundError } from "./errors"
 
 //in charge of communication between the models, the db and the api
@@ -101,10 +99,8 @@ export default class Store {
     this.request.addRecords(api, [id], attributes)
 
     const response = await this.request
-    console.log(`recordResponse`, response)
 
     const recordResponse = response.findRecordById(tableName, id)
-    console.log(`recordResponse`, recordResponse)
     if (!recordResponse) throw new RecordNotFoundError()
     return recordResponse
   }

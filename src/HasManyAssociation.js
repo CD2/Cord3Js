@@ -153,12 +153,6 @@ export default class HasManyAssociation extends Collection {
   push(id_or_record) {
     if (Model.isModel(id_or_record)) {
       if (id_or_record.persisted) {
-        console.log(
-          `asdasdasd`,
-          this.owner,
-          this.options.foreignKey,
-          this.owner[this.options.foreignKey],
-        )
         this.owner[this.options.foreignKey].push(id_or_record.id)
       } else {
         this._unsavedRecords.push(id_or_record)
@@ -191,5 +185,4 @@ export default class HasManyAssociation extends Collection {
   //   return newRecord
   // }
 }
-
 import Ids from "./model/Ids"

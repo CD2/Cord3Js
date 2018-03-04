@@ -43,7 +43,6 @@ export default BaseCls =>
       const { data, errors } = await this.class.perform(`create`, attributes)
       if (errors.length > 0) {
         Object.entries(errors[0]).forEach(([field, messages]) => {
-          console.log(`messages`, messages)
           messages.forEach(msg => this.errors.add(field, msg))
         })
         throw `save_failed`

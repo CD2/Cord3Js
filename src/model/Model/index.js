@@ -41,7 +41,6 @@ class ModelBuilder {
       .last()
   }
 }
-
 import NamingModule from "./naming"
 import CallbacksModule from "./callbacks"
 import AttributesModule from "./attributes"
@@ -205,7 +204,6 @@ export default class Model {
 }
 
 // Model.attributes = ['created_at', 'updated_at']
-
 import { depricationWarning } from "../../utils"
 
 const complexRequestedAttributeDepricationWarning = depricationWarning(
