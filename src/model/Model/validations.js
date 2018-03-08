@@ -43,12 +43,13 @@ export default BaseClass =>
           if (val.on && val.on !== context) return acc
           if (val.if) {
             const ifCallback = typeof val.if === `string` ? this[val.if] : val.if
-            if (typeof ifCallback !== `function`) {
-              throw new Error(
-                `'${val.if}' is not a function. it is used in as the if of a validation`,
-              )
+            // Checks to see whether the callback is a function, executes if it is otherwise
+            // calls the string in the model
+            if (typeof ifCallback === `function`) {
+              if (ifCallback.call(this, this) === false) return acc
+            } else {
+              if (!ifCallback) return acc
             }
-            if (ifCallback.call(this, this) === false) return acc
           }
           return acc.concat(val)
         }, [])
