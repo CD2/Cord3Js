@@ -53,7 +53,7 @@ export default class FileManager {
   @observable loaded = false
   @observable loading = false
 
-  constructor(record, fieldName, { allowedTypes, versions = {} } = {}) {
+  constructor(record, fieldName, { allowedTypes, versions = {}} = {}) {
     window.record = record
     this.record = record
     this.fieldName = fieldName

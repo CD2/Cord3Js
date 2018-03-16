@@ -35,13 +35,13 @@ export default class Store {
     if (!reload && (row.fetched || row.fetching)) return Promise.resolve(row)
     // needs to request
     row.fetching = true
-    return this.fetchIds(api, tableName, data)
-      .catch(err => {
+    return this.fetchIds(api, tableName, data).
+      catch(err => {
         row.fetching = false
         row.fetch_error = true
         throw err
-      })
-      .then(() => {
+      }).
+      then(() => {
         row.fetching = false
         row.fetched = true
         return row
@@ -140,16 +140,16 @@ export default class Store {
     if (this.request.empty()) return
     const request = this.request
     const requestJson = request.toJSON()
-    this.sendRequest(requestJson)
-      .then(response => request.resolve(response))
-      .catch(error => request.reject(error))
+    this.sendRequest(requestJson).
+      then(response => request.resolve(response)).
+      catch(error => request.reject(error))
     this._request = undefined
   }
 
   sendRequest(data) {
-    return this.httpRequest(this.apiUrl, data, { processData: false })
-      .then(response => new Response(response.data))
-      .then(this.processResponse)
+    return this.httpRequest(this.apiUrl, data, { processData: false }).
+      then(response => new Response(response.data)).
+      then(this.processResponse)
   }
 
   @action
