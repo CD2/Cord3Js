@@ -21,7 +21,7 @@ export default class Validator {
     return this.customMessage || this.defaultMessage
   }
 
-  validate(record) {
+  validate() {
     throw new Error(`validator must override #validate method`)
   }
 }

@@ -1,4 +1,3 @@
-import { observable, computed, action } from "mobx"
 import attribute from "../../dsl/attribute"
 import { depricationWarning } from "../../utils"
 

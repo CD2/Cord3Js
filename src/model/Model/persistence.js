@@ -1,5 +1,3 @@
-import { toJS } from "mobx"
-
 export default BaseCls =>
   class extends BaseCls {
     static create(attributes) {

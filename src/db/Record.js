@@ -1,4 +1,4 @@
-import { action, reaction, computed } from "mobx"
+import { computed } from "mobx"
 import Row from "./Row"
 
 export default class Record extends Row {

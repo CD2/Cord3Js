@@ -1,4 +1,3 @@
-import { action } from "mobx"
 import { uid } from "./utils"
 
 export default class Request {
@@ -113,4 +112,3 @@ export default class Request {
     // return objectToFormData(compiled)
   }
 }
-import objectToFormData from "object-to-formdata"

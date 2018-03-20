@@ -1,5 +1,4 @@
 import { pluralize, humanize } from "help-my-strings"
-import { NotImplementedError } from "../../errors"
 
 export default BaseCls =>
   class extends BaseCls {

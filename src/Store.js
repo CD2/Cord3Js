@@ -4,7 +4,6 @@ import { Database } from "./db"
 import Request from "./Request"
 import Response from "./Response"
 import { uid } from "./utils"
-import { toJS } from "mobx"
 import { CordError, RecordNotFoundError, IdsNotFoundError } from "./errors"
 
 //in charge of communication between the models, the db and the api
