@@ -167,7 +167,7 @@ export default class Collection {
   async pluck(...attrs) {
     const ids = await this.ids()
     const data = ids.map(async id => {
-      const { record, ...rest } = await this.model.store.findRecord(
+      const { record } = await this.model.store.findRecord(
         this.model.apiName,
         this.model.tableName,
         { id, attributes: attrs },
