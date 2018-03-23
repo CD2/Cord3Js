@@ -1,5 +1,4 @@
-import { observable, computed, action } from "mobx"
-import { toBase64 } from "./utils"
+import { observable, action } from "mobx"
 import attribute from "./dsl/attribute"
 
 export default class FileManager {

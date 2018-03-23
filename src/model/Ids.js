@@ -75,7 +75,7 @@ export default class Ids {
       this.loaded = true
     } catch (err) {
       throw err
-      this.errored = true
+      // this.errored = true
     }
     this.loading = false
     return this.idsArr

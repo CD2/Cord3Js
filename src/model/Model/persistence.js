@@ -70,7 +70,7 @@ export default BaseCls =>
     async destroy() {
       if (!this.persisted) throw new Error(`YO CANT DELETE THIS - ITS NOT REALLY THERE YET`)
       await this.runCallbacks(`beforeDestroy`)
-      const { data, errors } = await this.perform(`destroy`)
+      const { errors } = await this.perform(`destroy`)
       if (errors.length > 0) {
         throw `delete_failed`
       }

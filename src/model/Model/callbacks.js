@@ -1,4 +1,3 @@
-import { pluralize, humanize } from "help-my-strings"
 
 export default BaseCls =>
   class extends BaseCls {

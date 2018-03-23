@@ -1,4 +1,4 @@
-import { observable} from "mobx"
+import { observable } from "mobx"
 import Validator from "../validators/Validator"
 import { humanize } from "help-my-strings"
 
