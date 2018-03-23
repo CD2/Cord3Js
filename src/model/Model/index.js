@@ -2,6 +2,13 @@ import IdsModel from "../Ids"
 import Collection from "../Collection"
 import { mixin } from "../../module"
 import { observable } from "mobx"
+import NamingModule from "./naming"
+import CallbacksModule from "./callbacks"
+import AttributesModule from "./attributes"
+import PersistenceModule from "./persistence"
+import ValidationsModule from "./validations"
+import { depricationWarning } from "../../utils"
+
 class ModelBuilder {
   constructor(model, requestedAttributes = []) {
     this.model = model
@@ -41,11 +48,6 @@ class ModelBuilder {
       last()
   }
 }
-import NamingModule from "./naming"
-import CallbacksModule from "./callbacks"
-import AttributesModule from "./attributes"
-import PersistenceModule from "./persistence"
-import ValidationsModule from "./validations"
 
 // @mixin(
 //   BaseClass =>
@@ -204,7 +206,6 @@ export default class Model {
 }
 
 // Model.attributes = ['created_at', 'updated_at']
-import { depricationWarning } from "../../utils"
 
 const complexRequestedAttributeDepricationWarning = depricationWarning(
   `requesting associations attributes directly is depricated. please use withAttributes on the assocaition instead.`,
