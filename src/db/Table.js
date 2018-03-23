@@ -43,8 +43,7 @@ export default class Table {
   @action
   insertRecord(data) {
     const { id } = data
-    if (this.records.has(id)) {
-    }
+    // if (this.records.has(id)) 
     const record = this.records.has(id) ? this.records.get(id) : new Record(this, id)
     record.fetched = true
     record.update(data)

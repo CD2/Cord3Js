@@ -34,7 +34,7 @@ function giveClassAName(cls, name) {
 
 export function mixin(MixinClass) {
   return BaseCls => {
-    let extended = () => {}
+    // let extended = () => {}
     const wrappedCls = MixinClass(BaseCls)
     if (wrappedCls.extended) {
       wrappedCls.extended(wrappedCls)
