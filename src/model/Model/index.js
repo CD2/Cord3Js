@@ -141,11 +141,11 @@ export default class Model {
   }
 
   reload() {
-    this.class.reload(this.id, this.requestedAttributes)
+    return this.class.reload(this.id, this.requestedAttributes)
   }
 
   static reload(id, attributes) {
-    this.store.findRecord(this.apiName, this.tableName, { id, attributes, reload: true })
+    return this.store.findRecord(this.apiName, this.tableName, { id, attributes, reload: true })
   }
 
   toJSON() {

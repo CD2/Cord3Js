@@ -122,6 +122,11 @@ export default class Collection {
     const records = ids.map(id => driver.find(id))
     return Promise.all(records)
   }
+  async refetchIds() {
+    this._allIds = undefined
+    await this.ids()
+    this.triggerChange()
+  }
   all() {
     return this.records()
   }
@@ -161,7 +166,8 @@ export default class Collection {
     })
   }
   async map(cb) {
-    //TODO
+    const array = await this.toArray()
+    return array.map(cb)
   }
 
   async pluck(...attrs) {

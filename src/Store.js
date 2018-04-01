@@ -71,7 +71,7 @@ export default class Store {
     //needs to request
     row.fetching = true
     let response
-    const missingAttributes = row.missingAttributes(attributes)
+    const missingAttributes = reload ? attributes : row.missingAttributes(attributes)
     try {
       response = await this.fetchRecord(api, tableName, { id, attributes: missingAttributes })
     } catch (err) {
