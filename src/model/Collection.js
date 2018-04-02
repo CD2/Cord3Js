@@ -89,7 +89,7 @@ export default class Collection {
     this._onChangeCallbacks.forEach(cb => (cb === null ? null : cb()))
   }
 
-  async ids() {
+  async ids(ignoreOffsetAndLimit) {
     const scope = {
       sort: this._sort,
       query: this._query,
@@ -100,7 +100,7 @@ export default class Collection {
     if (!this._allIds) {
       this._allIds = await new Ids(this.model, scope).ids()
     }
-
+    if(ignoreOffsetAndLimit) return this._allIds
     if (_limit) {
       return this._allIds.slice(_offset, _offset + _limit)
     }

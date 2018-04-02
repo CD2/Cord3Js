@@ -64,12 +64,10 @@ export default class HasManyAssociation extends Collection {
     const persistedIds = this.owner[this.options.foreignKey] || []
     let ids = persistedIds.concat(this._unsavedIds)
 
-    // if this.isScoped() {
     const { _limit, _offset = 0 } = this
 
-    this._limit = undefined
-    this._offset = undefined
-    const scopedIds = await super.ids()
+    const scopedIds = await super.ids(true)
+
     this._limit = _limit
     this._offset = _offset
 
@@ -77,12 +75,10 @@ export default class HasManyAssociation extends Collection {
 
     if (_limit) {
       ids = ids.slice(_offset, _offset + _limit)
-    }
-    if (_offset) {
+    } else if (_offset) {
       ids = ids.slice(_offset)
     }
 
-    // }
     return ids
   }
 

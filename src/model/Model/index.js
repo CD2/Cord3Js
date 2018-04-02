@@ -149,7 +149,7 @@ export default class Model {
   }
 
   toJSON() {
-    return this.attributeValues.toJS()
+    return this.attributeValues ? this.attributeValues.toJS() : {}
   }
 
   async perform(action, data) {
