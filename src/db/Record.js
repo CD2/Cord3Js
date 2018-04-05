@@ -31,6 +31,6 @@ export default class Record extends Row {
 
   missingAttributes(attrs = []) {
     if (!attrs.filter) console.warn(attrs)
-    return attrs.filter(attr => !this.attributes.includes(attr))
+    return attrs.filter(attr => ![...this.attributes].includes(attr))
   }
 }
