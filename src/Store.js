@@ -10,11 +10,12 @@ import { CordError, RecordNotFoundError, IdsNotFoundError } from "./errors"
 export default class Store {
   models = {}
 
-  constructor({ apiUrl = `/`, batchTimeout = 100, httpMethod = post } = {}) {
+  constructor({ apiUrl = `/`, batchTimeout = 100, httpMethod = post, onError = () => {} } = {}) {
     this.apiUrl = apiUrl
     this.batchTimeout = batchTimeout
     this.db = new Database()
     this.httpRequest = httpMethod
+    this.errorHandler = onError
   }
 
   registerModel(model) {
@@ -34,18 +35,19 @@ export default class Store {
     if (!reload && (row.fetched || row.fetching)) return Promise.resolve(row)
     // needs to request
     row.fetching = true
-    return this.fetchIds(api, tableName, data).
-      catch(err => {
+    return this.fetchIds(api, tableName, data)
+      .catch(err => {
         row.fetching = false
         row.fetch_error = true
         throw err
-      }).
-      then(() => {
+      })
+      .then(() => {
         row.fetching = false
         row.fetched = true
         return row
       })
   }
+
 
   getIds(tableName, _id) {
     const table = this.db.getTable(tableName)
@@ -82,6 +84,7 @@ export default class Store {
     }
     row.fetching = false
     row.fetched = true
+    if (response._errors) this.errorHandler(response._errors)
     return {
       record: this.getRecord(tableName, id),
       errors: response._errors,
@@ -111,7 +114,9 @@ export default class Store {
     }
     const uid = this.request.addAction(apiName, action, ids, data)
     const response = await this.request
-    return response.findActionById(tableName, uid)
+    const x = response.findActionById(tableName, uid)
+    if (x.errors.length) this.errorHandler({errors: x.errors, apiName, action, ids, data})
+    return x
   }
 
   /*
@@ -139,16 +144,16 @@ export default class Store {
     if (this.request.empty()) return
     const request = this.request
     const requestJson = request.toJSON()
-    this.sendRequest(requestJson).
-      then(response => request.resolve(response)).
-      catch(error => request.reject(error))
+    this.sendRequest(requestJson)
+      .then(response => request.resolve(response))
+      .catch(error => request.reject(error))
     this._request = undefined
   }
 
   sendRequest(data) {
-    return this.httpRequest(this.apiUrl, data, { processData: false }).
-      then(response => new Response(response.data)).
-      then(this.processResponse)
+    return this.httpRequest(this.apiUrl, data, { processData: false })
+      .then(response => new Response(response.data))
+      .then(this.processResponse)
   }
 
   @action
@@ -173,6 +178,7 @@ export default class Store {
         r.forEach(r => table.insertRecord(r))
       })
 
+      if (_errors) this.errorHandler(_errors)
       table.insertErrors(_errors)
     })
     return response
