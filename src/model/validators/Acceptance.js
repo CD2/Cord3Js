@@ -11,8 +11,8 @@ export default class AcceptanceValidator extends Validator {
 
   validate(record) {
     const value = record[this.options.attribute]
-    if (!this.options.accept.includes(value)) {
-      record.errors.add(this.attribute, this.message)
+    if (!{ ...this.defaultOptions, ...this.options }.accept.includes(value)) {
+      record.errors.add(this.options.attribute, this.message)
     }
   }
 }
