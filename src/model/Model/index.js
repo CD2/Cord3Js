@@ -208,7 +208,7 @@ export default class Model {
 // Model.attributes = ['created_at', 'updated_at']
 
 const complexRequestedAttributeDepricationWarning = depricationWarning(
-  `requesting associations attributes directly is depricated. please use withAttributes on the assocaition instead.`,
+  `requesting associations attributes directly is depricated. please use withAttributes on the association instead.`,
 )
 const passingAttributesAsSecondArgumentToFindDepricationWarning = depricationWarning(
   `Passing requested arguments to find is depricated. Please use withAttributes instead`,
