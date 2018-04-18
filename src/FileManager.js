@@ -86,7 +86,7 @@ export default class FileManager {
     this.constructor.loadFile(val).then(
       action(`file loaded`, ({ name, url }) => {
         this._file = val
-        this._name = name
+        this.record[`${this.fieldName}_name`] = name
         this._url = url
         this.changed = true
         this.loading = false
@@ -147,13 +147,14 @@ export default class FileManager {
   get filename() {
     if (this._filename) return this._filename
     if (this._name) return this._name
+    return this.record.file_name
   }
 
   set filename(val) {
     this._filename = val
   }
   get extension() {
-    if (this.filename) return this.filename.slice(this.filename.lastIndexOf(`.`) + 1)
+    if (this.filename) return this.filename.slice(this.filename.lastIndexOf(`.`) + 1).toLowerCase()
   }
   get basename() {
     if (this.filename) return this.filename.slice(0, this.filename.lastIndexOf(`.`))
