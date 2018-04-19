@@ -57,10 +57,11 @@ export default class Table {
   @action
   insertAliases(aliasObject) {
     Object.entries(aliasObject).forEach(([alias, id]) => {
-      const recordData = this.records.get(alias).toJS()
+      const recordData = this.records.get(alias)
       if (recordData) {
-        recordData.id = id
-        this.insertRecord(recordData)
+        const data = recordData.data.toJS()
+        data.id = id
+        this.insertRecord(data)
       }
       this.records.delete(alias)
     })
