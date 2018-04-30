@@ -33,6 +33,9 @@ export default class FileManager {
         return this[`_${name}`]
       },
       set(val) {
+        if (!this[`_${name}`]) {
+          this[`_${name}`] = new FileManager(this, name, options)
+        }
         this[`_${name}`].set(val)
       },
     })
