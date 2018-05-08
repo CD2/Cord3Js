@@ -30,22 +30,22 @@ class ModelBuilder {
     return loadRecord(this.model, id, this.requestedAttributes)
   }
   all() {
-    return this.model.
-      all().
-      withAttributes(this.requestedAttributes).
-      all()
+    return this.model
+      .all()
+      .withAttributes(this.requestedAttributes)
+      .all()
   }
   first() {
-    return this.model.
-      all().
-      withAttributes(this.requestedAttributes).
-      first()
+    return this.model
+      .all()
+      .withAttributes(this.requestedAttributes)
+      .first()
   }
   last() {
-    return this.model.
-      all().
-      withAttributes(this.requestedAttributes).
-      last()
+    return this.model
+      .all()
+      .withAttributes(this.requestedAttributes)
+      .last()
   }
 }
 

@@ -48,7 +48,6 @@ export default class Store {
       })
   }
 
-
   getIds(tableName, _id) {
     const table = this.db.getTable(tableName)
     return table.getIds(_id)
@@ -115,7 +114,7 @@ export default class Store {
     const uid = this.request.addAction(apiName, action, ids, data)
     const response = await this.request
     const x = response.findActionById(tableName, uid)
-    if (x.errors.length) this.errorHandler({errors: x.errors, apiName, action, ids, data})
+    if (x.errors.length) this.errorHandler({ errors: x.errors, apiName, action, ids, data })
     return x
   }
 
