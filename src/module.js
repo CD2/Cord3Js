@@ -34,7 +34,6 @@ function giveClassAName(cls, name) {
 
 export function mixin(MixinClass) {
   return BaseCls => {
-    // let extended = () => {}
     const wrappedCls = MixinClass(BaseCls)
     if (wrappedCls.extended) {
       wrappedCls.extended(wrappedCls)
@@ -44,29 +43,3 @@ export function mixin(MixinClass) {
   }
 }
 
-// function Timestamped(Base) {
-//   return class extends Base {
-//     timestamp = Date.now();
-
-//     test() {
-//       console.log(this, "tested");
-//     }
-//   };
-// }
-
-// @mixin(Timestamped)
-// class User {
-//   thing() {
-//     console.log(this.constructor.name);
-//   }
-// }
-
-// // const TimestampedUser = Timestamped(User)
-// // const u = new TimestampedUser()
-// // u.test()
-
-// const user = new User();
-// console.log(user.timestamp);
-// console.log(user.test);
-// user.thing();
-// console.log(User.name);

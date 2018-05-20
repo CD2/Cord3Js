@@ -22,7 +22,6 @@ export default BaseCls =>
     static set attributes(val) {
       attributeDepricationWarning()
       val.forEach(attrName => {
-        // console.log(attrName, this)
         attribute(this.prototype, attrName, {})
       })
     }
