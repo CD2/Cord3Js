@@ -1,6 +1,7 @@
 // COMMENT ONE: this file seems to just import things
 
 export { Model, Collection } from "./model"
+export { default as FileManager } from "./FileManager"
 export { default as Store } from "./Store"
 
 export { default as validates } from "./dsl/validates"
