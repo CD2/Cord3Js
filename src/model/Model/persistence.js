@@ -43,6 +43,7 @@ export default BaseCls =>
         Object.entries(errors[0]).forEach(([field, messages]) => {
           messages.forEach(msg => this.errors.add(field, msg))
         })
+        console.error(errors)
         throw `save_failed`
       }
       this._id = data.id

@@ -1,5 +1,4 @@
 import { observable, action } from "mobx"
-import App from "models/App"
 import attribute from "./dsl/attribute"
 
 export default class FileManager {
@@ -70,12 +69,13 @@ export default class FileManager {
     })
   }
 
-  async buildUrl(size) {
-    const img = await App.image({ uid: this.rawUid, size: size })
-    if(img) {
-      this.setUrl(img.data.url)
-      return this._url
-    }
+  static baseUrl = `http://localhost:3000/image?`
+
+  buildUrl(size) {
+    let url = this.constructor.baseUrl
+    url += `uid=${this.rawUid}`
+    if (size) url += `&size=${size}`
+    return url
   }
 
   get() {
