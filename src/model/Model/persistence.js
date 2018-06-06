@@ -39,11 +39,7 @@ export default BaseCls =>
       const attributes = this._attributesForSaveWithValues()
       await this.runCallbacks(`beforeCreate`)
       const { data, errors } = await this.class.perform(`create`, attributes)
-      if (errors.length > 0) {
-        Object.entries(errors[0]).forEach(([field, messages]) => {
-          messages.forEach(msg => this.errors.add(field, msg))
-        })
-        console.error(errors)
+      if (this.processErrors(errors)) {
         throw `save_failed`
       }
       this._id = data.id
@@ -57,15 +53,29 @@ export default BaseCls =>
       //TODO: only save changed fields
       await this.runCallbacks(`beforeUpdate`)
       const { data, errors } = await this.perform(`update`, attributes)
-      if (errors.length > 0) {
-        Object.entries(errors[0]).forEach(([field, messages]) => {
-          messages.forEach(msg => this.errors.add(field, msg))
-        })
+      if (this.processErrors(errors)) {
         throw `save_failed`
       }
       this.record.update({ ...attributes, ...data })
       this.reset()
       this.runCallbacks(`afterUpdate`)
+    }
+
+    processErrors(errors){
+      if (errors.length > 0) {
+        try{
+          Object.entries(JSON.parse(errors[0])).forEach(([field, messages]) => {
+            messages.forEach(msg => this.errors.add(field, msg))
+          })
+        }
+        catch(e) {
+          this.errors.add('Unknown error')
+        }
+        console.error(errors)
+        throw `save_failed`
+      } else {
+        return false
+      }
     }
 
     async destroy() {

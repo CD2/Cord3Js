@@ -215,6 +215,7 @@ const passingAttributesAsSecondArgumentToFindDepricationWarning = depricationWar
 )
 
 async function loadRecord(model, id, attrs) {
+
   let processedAttrs = []
   attrs.forEach(attr => {
     if (typeof attr != `string`) {
@@ -246,5 +247,7 @@ async function loadRecord(model, id, attrs) {
   const record = model.new()
   record.requestedAttributes = attrs
   record._id = id
+
+
   return record
 }
