@@ -103,7 +103,7 @@ export default BaseClass =>
       messagesFor(fieldName) {
         const friendlyName = humanize(fieldName)
         const errors = this.for(fieldName)
-        return errors.map(msg => `${friendlyName} ${msg}`)
+        return errors.map(msg => ` ${friendlyName} ${msg}`)
       },
     }
   }
