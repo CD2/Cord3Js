@@ -42,4 +42,3 @@ export function mixin(MixinClass) {
     return giveClassAName(wrappedCls, BaseCls.name)
   }
 }
-

@@ -19,8 +19,10 @@ export default BaseCls =>
 
     async save() {
       const valid = await this.isValid()
-      console.error(valid, this.errors.messages())
-      if (!valid) return false
+      if (!valid) {
+        console.error(valid, this.errors.messages())
+        return false
+      }
 
       await this.runCallbacks(`beforeSave`)
       const saveMethod = this.newRecord ? this._create_record : this._update_record
@@ -61,15 +63,14 @@ export default BaseCls =>
       this.runCallbacks(`afterUpdate`)
     }
 
-    processErrors(errors){
+    processErrors(errors) {
       if (errors.length > 0) {
-        try{
+        try {
           Object.entries(JSON.parse(errors[0])).forEach(([field, messages]) => {
             messages.forEach(msg => this.errors.add(field, msg))
           })
-        }
-        catch(e) {
-          this.errors.add('Unknown error')
+        } catch (e) {
+          this.errors.add("Unknown error")
         }
         console.error(errors)
         throw `save_failed`

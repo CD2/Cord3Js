@@ -133,6 +133,10 @@ export default class Collection {
   toArray() {
     return this.records()
   }
+  async toObject() {
+    const records = await this.records()
+    return records.reduce((acc, elem) => ((acc[Number(elem.id)] = elem), acc), {})
+  }
   async first(n = 1) {
     let ids = await this.ids()
     ids = ids.slice(0, n)
