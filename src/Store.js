@@ -107,15 +107,22 @@ export default class Store {
   }
 
   async perform(apiName, tableName, { action, id, ids, data }) {
-    if (id !== undefined) {
-      if (ids === undefined) ids = []
-      ids.push(id)
-    }
-    const uid = this.request.addAction(apiName, action, ids, data)
-    const response = await this.request
-    const x = response.findActionById(tableName, uid)
-    if (x.errors.length) this.errorHandler({ errors: x.errors, apiName, action, ids, data })
-    return x
+    return new Promise((resolve, reject) => {
+      if (id !== undefined) {
+        if (ids === undefined) ids = []
+        ids.push(id)
+      }
+      const uid = this.request.addAction(apiName, action, ids, data)
+      this.request
+        .then(response => {
+          const x = response.findActionById(tableName, uid)
+          if (x.errors.length) this.errorHandler({ errors: x.errors, apiName, action, ids, data })
+          resolve(x)
+        })
+        .catch(e => {
+          reject(e)
+        })
+    })
   }
 
   /*

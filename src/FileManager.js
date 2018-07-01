@@ -150,7 +150,7 @@ export default class FileManager {
   get filename() {
     if (this._filename) return this._filename
     if (this._name) return this._name
-    return this.record.file_name
+    return this.record[`${this.fieldName}_name`]
   }
 
   set filename(val) {
