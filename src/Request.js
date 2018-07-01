@@ -17,13 +17,13 @@ export default class Request {
         this.__promise = new Promise((resolve, reject) => {
           this.resolve = resolve
           this.reject = reject
-        })
-          .then(response => {
+        }).
+          then(response => {
             this.resolve = () => {}
             this.reject = () => {}
             return response
-          })
-          .catch(error => {
+          }).
+          catch(error => {
             this.resolve = () => {}
             this.reject = () => {}
             throw error

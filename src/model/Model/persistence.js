@@ -70,7 +70,7 @@ export default BaseCls =>
             messages.forEach(msg => this.errors.add(field, msg))
           })
         } catch (e) {
-          this.errors.add("Unknown error")
+          this.errors.add(`Unknown error`)
         }
         console.error(errors)
         throw `save_failed`
