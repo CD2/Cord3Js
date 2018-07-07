@@ -11,25 +11,23 @@ export default class Request {
 
   __promise = null
   toPromise() {
-    return (
-      this.__promise ||
-      do {
-        this.__promise = new Promise((resolve, reject) => {
-          this.resolve = resolve
-          this.reject = reject
-        }).
-          then(response => {
-            this.resolve = () => {}
-            this.reject = () => {}
-            return response
-          }).
-          catch(error => {
-            this.resolve = () => {}
-            this.reject = () => {}
-            throw error
-          })
-      }
-    )
+    if (!this.__promise) {
+      this.__promise = new Promise((resolve, reject) => {
+        this.resolve = resolve
+        this.reject = reject
+      })
+        .then(response => {
+          this.resolve = () => {}
+          this.reject = () => {}
+          return response
+        })
+        .catch(error => {
+          this.resolve = () => {}
+          this.reject = () => {}
+          throw error
+        })
+    }
+    return this.__promise
   }
 
   then(cb) {
