@@ -1,6 +1,6 @@
 {
   "name": "@cd2/cord",
-  "version": "3.0.17",
+  "version": "3.0.18",
   "description": "web cord to manage the cord api",
   "main": "build/script.js",
   "scripts": {
@@ -11,24 +11,31 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.17.1",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-plugin-transform-do-expressions": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.24.1",
     "help-my-strings": "^1.0.6",
     "mobx": "^3.5.1",
     "object-to-formdata": "^1.2.2",
-    "pluralize": "^7.0.0",
-    "webpack": "^3.11.0"
+    "pluralize": "^7.0.0"
   },
   "peerDependencies": {
     "mobx": "^3.5.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-beta.52",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.44",
+    "@babel/plugin-proposal-decorators": "^7.0.0-beta.44",
+    "@babel/plugin-proposal-do-expressions": "^7.0.0-beta.44",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.44",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0-beta.44",
+    "@babel/plugin-transform-modules-commonjs": "^7.0.0-beta.52",
+    "@babel/polyfill": "^7.0.0-beta.44",
+    "@babel/preset-env": "^7.0.0-beta.44",
+    "@babel/preset-react": "^7.0.0-beta.44",
     "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1"
+    "babel-loader": "^8.0.0-beta",
+    "babel-preset-es2015": "^6.24.1",
+    "ts-loader": "^4.4.1",
+    "typescript": "^2.9.2",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8"
   }
 }
