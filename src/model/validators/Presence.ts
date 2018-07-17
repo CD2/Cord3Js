@@ -1,8 +1,10 @@
 import Validator from "./Validator"
 
+console.log("PRESENCE VALIDATOR LOADED")
+
 export default class PresenceValidator extends Validator {
   static validationName = `presence`
-
+  static x = 123
   defaultMessage = `is required`
 
   constructor(options) {

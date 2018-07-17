@@ -1,6 +1,6 @@
 {
   "name": "@cd2/cord",
-  "version": "3.0.36",
+  "version": "3.0.35",
   "description": "web cord to manage the cord api",
   "main": "build/script.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "mobx": "^3.5.1",
     "ts-loader": "^4.4.1",
     "typescript": "^2.9.2",
-    "webpack": "^4.15.1",
+    "webpack": "^4.16.0",
     "webpack-cli": "^3.0.8"
   }
 }

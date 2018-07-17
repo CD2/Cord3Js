@@ -8,28 +8,48 @@ module.exports = {
     path: path.resolve(__dirname, `build`),
     filename: `script.js`,
     publicPath: `/`,
-    library: `@cd2/cord`,
-    libraryTarget: `umd`,
+    libraryTarget: `commonjs`,
+  },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
   devServer: {
     contentBase: `./build`,
     hot: true,
   },
   target: `node`,
+  // mode: "development",
   module: {
-    loaders: [
+    rules: [
+      {
+        test: /(\.tsx?)/,
+        use: [
+          {
+            loader: "ts-loader",
+            // loader: "awesome-typescript-loader",
+            options: {
+              transpileOnly: true,
+            },
+          },
+        ],
+      },
       {
         test: /(\.js|\.jsx)$/,
-        loader: `babel-loader`,
-        query: {
-          presets: [`env`, `react`],
-          plugins: [
-            `transform-object-rest-spread`,
-            `transform-decorators-legacy`,
-            `transform-class-properties`,
-            `transform-do-expressions`,
-          ],
-        },
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-react", "@babel/preset-env"],
+              plugins: [
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
+                "@babel/plugin-proposal-object-rest-spread",
+                ["@babel/plugin-proposal-class-properties", { loose: true }],
+                "@babel/plugin-proposal-do-expressions",
+                "@babel/plugin-syntax-dynamic-import",
+              ],
+            },
+          },
+        ],
       },
     ],
   },
@@ -37,9 +57,9 @@ module.exports = {
     colors: true,
   },
   externals: {
-    "react": `commonjs react`,
+    react: `commonjs react`,
     "react-dom": `commonjs react-dom`,
-    "mobx": `commonjs mobx`,
+    mobx: `commonjs mobx`,
     "mobx-react": `commonjs mobx-react`,
   },
 }
