@@ -1,6 +1,6 @@
 {
   "name": "@cd2/cord",
-  "version": "3.0.50",
+  "version": "3.0.51",
   "description": "web cord to manage the cord api",
   "main": "build/script.js",
   "scripts": {
