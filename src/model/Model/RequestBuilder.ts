@@ -23,7 +23,7 @@ export class RequestBuilder {
 
   new(attrs) {
     const record = new this.model(attrs)
-    record.attributes = this.attributes
+    record.requestedAttributes = this.attributes
     return record
   }
 
