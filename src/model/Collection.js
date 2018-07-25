@@ -57,6 +57,11 @@ export default class Collection {
     this.triggerChange()
     return this
   }
+  slice(ids) {
+    this._allIds = ids
+    this.triggerChange()
+    return this
+  }
   // TODO: isScoped() returns if there is a scope on the collection e.g. sorting or a query
   dup() {
     const dupped = new this.constructor(this.model)
