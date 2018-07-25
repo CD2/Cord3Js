@@ -1,6 +1,6 @@
 {
   "name": "@cd2/cord",
-  "version": "3.0.99",
+  "version": "3.0.100",
   "description": "web cord to manage the cord api",
   "main": "build/script.js",
   "scripts": {
@@ -10,7 +10,6 @@
   "author": "Henry Morgan",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.17.1",
     "help-my-strings": "^1.0.6",
     "mobx": "^3.5.1",
     "object-to-formdata": "^1.2.2",
