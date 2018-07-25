@@ -18,7 +18,7 @@ module.exports = {
     hot: true,
   },
   target: `node`,
-  mode: "development",
+  // mode: "development",
   module: {
     rules: [
       {
@@ -57,9 +57,9 @@ module.exports = {
     colors: true,
   },
   externals: {
-    // react: `commonjs react`,
-    // "react-dom": `commonjs react-dom`,
-    // mobx: `commonjs mobx`,
-    // "mobx-react": `commonjs mobx-react`,
+    react: "React",
+    "react-dom": "ReactDOM",
+    mobx: "mobx",
+    "mobx-react": "mobxReact",
   },
 }
