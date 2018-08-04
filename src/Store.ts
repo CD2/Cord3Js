@@ -1,5 +1,4 @@
 import { action } from "mobx"
-import { post } from "axios"
 import { Database } from "./db"
 import Request from "./Request"
 import Response from "./Response"
@@ -10,17 +9,21 @@ import { CordError, RecordNotFoundError, IdsNotFoundError } from "./errors"
 export default class Store {
   models = {}
 
-  constructor({ apiUrl = `/`, batchTimeout = 100, httpMethod = post, onError = () => {} } = {}) {
+  apiUrl: string
+  batchTimeout: number
+  httpRequest: any
+  errorHandler: any
+  db = new Database()
+
+  constructor({ apiUrl = `/`, batchTimeout = 100, httpMethod, onError = () => {} }) {
     this.apiUrl = apiUrl
     this.batchTimeout = batchTimeout
-    this.db = new Database()
     this.httpRequest = httpMethod
     this.errorHandler = onError
   }
 
   registerModel(model) {
     model.store = this
-    // if (model.name in this.models) throw new CordError('Two models have the same name!')
     this.models[model.className] = model
   }
 
@@ -32,20 +35,11 @@ export default class Store {
   findIds(api, tableName, { reload = false, ...data }) {
     if (data._id === undefined) data._id = uid()
     const row = this.getIds(tableName, data._id)
-    if (!reload && (row.fetched || row.fetching)) return Promise.resolve(row)
-    // needs to request
-    row.fetching = true
     return this.fetchIds(api, tableName, data)
       .catch(err => {
-        row.fetching = false
-        row.fetch_error = true
         throw err
       })
-      .then(() => {
-        row.fetching = false
-        row.fetched = true
-        return row
-      })
+      .then(() => row)
   }
 
   getIds(tableName, _id) {
@@ -64,25 +58,9 @@ export default class Store {
     })
   }
 
-  async findRecord(api, tableName, { id, attributes = [], reload = false } = {}) {
-    const row = this.getRecord(tableName, id)
-    if (!reload && (row.fetched || row.fetching) && row.hasAttributes(attributes)) {
-      return { record: row, errors: [] }
-    }
-    //needs to request
-    row.fetching = true
-    let response
-    const missingAttributes = reload ? attributes : row.missingAttributes(attributes)
-    try {
-      response = await this.fetchRecord(api, tableName, { id, attributes: missingAttributes })
-    } catch (err) {
-      row.fetching = false
-      row.fetch_error = true
-      /*request err*/
-      throw err
-    }
-    row.fetching = false
-    row.fetched = true
+  async findRecord(api, tableName, { id, attributes = [], reload = false }: any = {}) {
+    const response = await this.fetchRecord(api, tableName, { id, attributes })
+
     if (response._errors) this.errorHandler(response._errors)
     return {
       record: this.getRecord(tableName, id),
@@ -92,11 +70,10 @@ export default class Store {
   }
 
   getRecord(tableName, id) {
-    const table = this.db.getTable(tableName)
-    return table.getRecord(id)
+    return this.db.getTable(tableName).getRecord(id)
   }
 
-  async fetchRecord(api, tableName, { id, attributes = [] } = {}, { reload = false } = {}) {
+  async fetchRecord(api, tableName, { id, attributes = [] }: any = {}, { reload = false } = {}) {
     this.request.addRecords(api, [id], attributes)
 
     const response = await this.request
@@ -125,6 +102,8 @@ export default class Store {
     })
   }
 
+  _request: any
+  _batchTimer: any
   /*
     returns a request builder
   */

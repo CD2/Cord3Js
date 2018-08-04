@@ -7,13 +7,14 @@ export default class IdsRecord {
   @observable error = null
   @observable data = observable.map()
 
-  constructor(key) {
+  key: any
+  constructor(key?) {
     this.key = key
   }
 
   @computed
   get scopes() {
-    return this.data.keys()
+    return Array.from(this.data.keys())
   }
 
   hasScopes(scopes) {
@@ -37,7 +38,7 @@ export default class IdsRecord {
   }
 
   toJSON() {
-    const json = {
+    const json: any = {
       fetched: this.fetched,
       fetching: this.fetching,
       fetch_error: this.fetch_error,

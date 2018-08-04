@@ -1,4 +1,5 @@
 export default class Response {
+  _response: any
   constructor(response) {
     this._response = response
   }

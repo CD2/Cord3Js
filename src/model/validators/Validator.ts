@@ -1,7 +1,8 @@
 export default class Validator {
+  [key: string]: any
   defaultOptions = {}
 
-  constructor({ message, ...options } = {}) {
+  constructor({ message, ...options }: any = {}) {
     this.customMessage = message
     this.options = { ...this.defaultOptions, ...options }
   }
@@ -22,7 +23,7 @@ export default class Validator {
     return this.customMessage || this.defaultMessage
   }
 
-  validate() {
+  validate(record: any) {
     throw new Error(`validator must override #validate method`)
   }
 }

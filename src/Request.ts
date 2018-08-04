@@ -1,10 +1,10 @@
 import { uid } from "./utils"
 
 export default class Request {
-  request = {}
+  request: any = {}
   onSuccessCallbacks = []
   onErrorCallbacks = []
-
+  store: any
   constructor(store) {
     this.store = store
   }
@@ -97,8 +97,8 @@ export default class Request {
   */
 
   toJSON() {
-    const compiled = Object.entries(this.request).reduce((compiled, [api, request]) => {
-      const subRequest = {}
+    const compiled = Object.entries(this.request).reduce((compiled, [api, request]: any) => {
+      const subRequest: any = {}
       subRequest.api = api
       if (request.ids) subRequest.ids = request.ids
       if (request.records) subRequest.records = request.records

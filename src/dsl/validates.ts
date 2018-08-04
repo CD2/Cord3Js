@@ -1,7 +1,7 @@
 export default function validates(target, name, descriptor) {
   const attribute_name = name[0] === `_` ? name.substring(1, name.length) : name
   const { on, if: ifCallback, ...validators } = descriptor.initializer()
-  const validations = Object.entries(validators).map(([validator, options]) => {
+  const validations = Object.entries(validators).map(([validator, options]: any) => {
     if (options === true) options = {}
     options.attribute = attribute_name
     return { validator, on, if: ifCallback, options }

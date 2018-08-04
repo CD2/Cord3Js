@@ -1,7 +1,7 @@
 class Attribute {
   configurable = true
 
-  static get(record, name, { defaultValue }) {
+  static get(record, name, { defaultValue }: any) {
     if (record.changes.has(name)) {
       return record.changes.get(name)
     }
@@ -23,7 +23,7 @@ class Attribute {
     record.changes.set(name, val)
   }
 
-  static install(model, name, options) {
+  static install(model, name, options: any = {}) {
     const klass = this
 
     Object.defineProperty(model, name, {
@@ -63,7 +63,7 @@ const attributeTypes = {
   price: PriceAttribute,
 }
 
-export default function attribute(target, name, descriptor = {}) {
+export default function attribute(target, name, descriptor: any = {}) {
   if (name === `id`) throw new Error(`STOP SETTING \`id\` AS AN ATTRIBUTE`)
   if (target instanceof Function) target = target.prototype
 
@@ -86,7 +86,7 @@ export default function attribute(target, name, descriptor = {}) {
 
   function defaultSetter(name) {
     return function(val) {
-      Attribute.set(this, name, val)
+      Attribute.set(this, name, val, {})
     }
   }
 

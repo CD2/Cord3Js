@@ -2,6 +2,8 @@ import { observable, action } from "mobx"
 import attribute from "./dsl/attribute"
 
 export default class FileManager {
+  [key: string]: any
+
   static install(model, name, options) {
     model.beforeValidation(`ensure file type for ${name}`, m => {
       const manager = m[name]
@@ -55,8 +57,7 @@ export default class FileManager {
   @observable loaded = false
   @observable loading = false
 
-  constructor(record, fieldName, { allowedTypes, versions = {}} = {}) {
-    window.record = record
+  constructor(record, fieldName, { allowedTypes, versions = {} }: any = {}) {
     this.record = record
     this.fieldName = fieldName
     this.allowedTypes = allowedTypes
@@ -71,8 +72,8 @@ export default class FileManager {
 
   static baseUrl = `http://localhost:3000/image?`
 
-  buildUrl(size) {
-    let url = this.constructor.baseUrl
+  buildUrl(size?) {
+    let url = FileManager.baseUrl
     url += `uid=${this.rawUid}`
     if (size) url += `&size=${size}`
     return url
@@ -86,7 +87,7 @@ export default class FileManager {
   set(val) {
     this.loading = true
     this.loaded = false
-    this.constructor.loadFile(val).then(
+    FileManager.loadFile(val).then(
       action(`file loaded`, ({ name, url }) => {
         this._file = val
         this.record[`${this.fieldName}_name`] = name
@@ -136,7 +137,7 @@ export default class FileManager {
       reader.onload = function(e) {
         const fileInfo = {
           name: file.name,
-          url: e.target.result,
+          url: (e.target as any).result,
         }
         resolve(fileInfo)
       }

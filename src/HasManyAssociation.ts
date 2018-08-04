@@ -1,11 +1,13 @@
-import { camelize, singularize } from "help-my-strings"
+import { camelCase, singularize } from "help-my-strings"
 import Collection from "./model/Collection"
 import Model from "./model/Model"
 import attribute from "./dsl/attribute"
 
 export default class HasManyAssociation extends Collection {
-  static install(model, name, { model: foreignModelName, foreignKey, inverseOf } = {}) {
-    if (!foreignModelName) foreignModelName = camelize(singularize(name))
+  [key: string]: any
+
+  static install(model, name, { model: foreignModelName, foreignKey, inverseOf }: any = {}) {
+    if (!foreignModelName) foreignModelName = camelCase(singularize(name))
     if (!foreignKey) foreignKey = `${singularize(name)}_ids`
     const options = {
       name,
@@ -31,8 +33,7 @@ export default class HasManyAssociation extends Collection {
   associationType = `hasMany`
 
   constructor(owner, options) {
-    const targetModel = owner.class.store.getModel(options.model)
-    super(targetModel)
+    super(owner.class.store.getModel(options.model))
     this.owner = owner
     this.options = options
 
@@ -45,7 +46,7 @@ export default class HasManyAssociation extends Collection {
   }
 
   dup() {
-    const dupped = new this.constructor(this.owner, this.options)
+    const dupped = new HasManyAssociation(this.owner, this.options)
     dupped._withAttributes = [...this._withAttributes]
     dupped._sort = this._sort
     dupped._query = this._query
@@ -88,8 +89,9 @@ export default class HasManyAssociation extends Collection {
     return records.concat(this._unsavedRecords)
   }
 
-  new(...args) {
-    return this.build(...args)
+  // Depricate
+  new(attrs) {
+    return this.build(attrs)
   }
 
   build(attrs) {

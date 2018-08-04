@@ -1,6 +1,7 @@
 import { observable } from "mobx"
 
 export default class Ids {
+  [key: string]: any
   @observable loading = false
   @observable loaded = false
   @observable errored = false

@@ -30,6 +30,8 @@ export class RequestBuilder {
   find(id) {
     return new RequestBuilder(this.model, { id, attributes: this.attributes })
   }
+
+  _promise: any
   load() {
     if (!this._promise) {
       this._promise = loadRecord(this.model, this.id, this.attributes)
@@ -62,7 +64,7 @@ export class RequestBuilder {
     return this.load().catch(cb)
   }
 
-  async perform(action, data) {
+  async perform(this: any, action, data) {
     const { store, apiName, tableName } = this.model
     const actionData: any = { action, data }
     if (this.id) actionData.id = this.id

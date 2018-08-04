@@ -2,6 +2,7 @@ import { computed } from "mobx"
 import Row from "./Row"
 
 export default class Record extends Row {
+  [key: string]: any
   constructor(table, id) {
     super()
     this.table = table

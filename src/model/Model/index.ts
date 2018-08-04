@@ -13,11 +13,13 @@ import "../validators/Email"
 import "../validators/Password"
 
 class Model {
+  [key: string]: any
+
   static get _validators() {
-    return this.__validators || (this.__validators = [])
+    return (this as any).__validators || ((this as any).__validators = [])
   }
   static set _validators(val) {
-    this.__validators = val
+    ;(this as any).__validators = val
   }
 
   async isValid() {
@@ -31,7 +33,7 @@ class Model {
     }
 
     let validatableAttributes
-    validatableAttributes = Object.keys(this.class._validators)
+    validatableAttributes = Object.keys((this.class as any)._validators)
     // if (this.newRecord) {
     // } else {
     //   validatableAttributes = this.changes.keys().slice(0)
@@ -75,7 +77,7 @@ class Model {
     return isValid
   }
 
-  validationsFor(attr) {
+  validationsFor(this: any, attr) {
     return this.class._validators[attr] || []
   }
 
@@ -116,7 +118,7 @@ class Model {
     return record
   }
 
-  _attributesForSaveWithValues() {
+  _attributesForSaveWithValues(this: any) {
     let attrs = this.changes.toJS()
     this.class.additionalAttributesToSave.forEach(a => {
       const value = this[a].serialize()
@@ -150,7 +152,7 @@ class Model {
   async _create_record() {
     const attributes = this._attributesForSaveWithValues()
     await this.runCallbacks(`beforeCreate`)
-    const { data, errors } = await this.class.perform(`create`, attributes)
+    const { data, errors } = await Model.perform(`create`, attributes)
     if (this.processErrors(errors)) {
       throw `save_failed`
     }
@@ -176,7 +178,7 @@ class Model {
   processErrors(errors) {
     if (errors.length > 0) {
       try {
-        Object.entries(JSON.parse(errors[0])).forEach(([field, messages]) => {
+        Object.entries(JSON.parse(errors[0])).forEach(([field, messages]: any) => {
           messages.forEach(msg => this.errors.add(field, msg))
         })
       } catch (e) {
@@ -189,7 +191,7 @@ class Model {
     }
   }
 
-  async destroy() {
+  async destroy(this: any) {
     if (!this.persisted) throw new Error(`YO CANT DELETE THIS - ITS NOT REALLY THERE YET`)
     await this.runCallbacks(`beforeDestroy`)
     const { errors } = await this.perform(`destroy`)
@@ -199,7 +201,7 @@ class Model {
     this.record.remove()
     this.runCallbacks(`afterDestroy`)
   }
-  static callbacks(name) {
+  static callbacks(this: any, name) {
     if (!this._callbacks) this._callbacks = {}
     return this._callbacks[name]
   }
@@ -215,24 +217,24 @@ class Model {
       },
     })
   }
-  static addCallback(callbackName, cbOrName, cb) {
+  static addCallback(this: any, callbackName, cbOrName, cb) {
     if (cb === undefined) cb = cbOrName
     if (this._callbacks === undefined) this._callbacks = {}
     if (this._callbacks[callbackName] === undefined) this._callbacks[callbackName] = []
     this._callbacks[callbackName].push(cb)
   }
-  static callbacksFor(name) {
+  static callbacksFor(this: any, name) {
     if (!this._callbacks) return []
     return this._callbacks[name] || []
   }
 
-  addCallback(callbackName, cbOrName, cb) {
+  addCallback(this: any, callbackName, cbOrName, cb) {
     if (cb === undefined) cb = cbOrName
     if (this._callbacks === undefined) this._callbacks = {}
     if (this._callbacks[callbackName] === undefined) this._callbacks[callbackName] = []
     this._callbacks[callbackName].push(cb)
   }
-  callbacksFor(name) {
+  callbacksFor(this: any, name) {
     if (!this._callbacks) return []
     return this._callbacks[name] || []
   }
@@ -242,7 +244,7 @@ class Model {
   name: callbacks to run
   args: [arguments for each callback]
 */
-  runCallbacks(name, args = []) {
+  runCallbacks(this: any, name, args = []) {
     const clsCallbacks = this.class.callbacksFor(name)
     const instCallbacks = this.callbacksFor(name)
     const callbacks = clsCallbacks.concat(instCallbacks)
@@ -255,13 +257,14 @@ class Model {
   }
 
   changed() {
-    this.changes.keys().length > 0
+    Array.from(this.changes.keys()).length > 0
   }
 
   reset() {
     this.changes.clear()
   }
 
+  static _className: any
   static get className() {
     return this._className || this.name
   }
@@ -295,12 +298,12 @@ class Model {
   _id = undefined
   changes = observable.map()
 
-  constructor(attributes = {}, requestedAttributes) {
+  constructor(attributes = {}, requestedAttributes = []) {
     this.assignAttributes(attributes)
     this.requestedAttributes = requestedAttributes
   }
 
-  static new(...args) {
+  static new(this: any, ...args) {
     return new this(...args)
   }
 
@@ -327,11 +330,11 @@ class Model {
     return this._id
   }
 
-  get record() {
+  get record(this: any) {
     return this.class.store.getRecord(this.class.tableName, this.id)
   }
 
-  withAttributes(attrs) {
+  withAttributes(this: any, attrs) {
     if (this.persisted) {
       const newAttrs = [...this.requestedAttributes, ...attrs]
       return this.class.withAttributes(newAttrs).find(this.id)
@@ -348,7 +351,7 @@ class Model {
     return this.associations.find(({ name }) => name === needleName)
   }
 
-  async load() {
+  async load(this: any) {
     const { id, requestedAttributes } = this
     const { apiName, tableName } = this.class
     this.loading = true
@@ -362,11 +365,11 @@ class Model {
     }
   }
 
-  reload() {
+  reload(this: any) {
     return this.class.reload(this.id, this.requestedAttributes)
   }
 
-  static reload(id, attributes) {
+  static reload(this: any, id, attributes) {
     return this.store.findRecord(this.apiName, this.tableName, { id, attributes, reload: true })
   }
 
@@ -374,13 +377,13 @@ class Model {
     return this.attributeValues ? this.attributeValues.toJS() : {}
   }
 
-  async perform(action, data) {
+  async perform(this: any, action, data) {
     const { store, apiName, tableName } = this.class
     const response = await store.perform(apiName, tableName, { action, id: this._id, data })
     return response
   }
 
-  static perform(action, data) {
+  static perform(this: any, action, data) {
     return this.store.perform(this.apiName, this.tableName, { action, data })
   }
 
@@ -388,7 +391,7 @@ class Model {
     return IdsModel.bind(null, this)
   }
 
-  static prepare(id) {
+  static prepare(this: any, id) {
     const model = new this()
     model._id = id
     return model

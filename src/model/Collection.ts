@@ -2,6 +2,8 @@ import Ids from "./Ids"
 import { observable } from "mobx"
 
 export default class Collection {
+  [key: string]: any
+
   constructor(model) {
     this.model = model
   }
@@ -63,7 +65,7 @@ export default class Collection {
     return this
   }
   // TODO: isScoped() returns if there is a scope on the collection e.g. sorting or a query
-  dup() {
+  dup(this: any) {
     const dupped = new this.constructor(this.model)
     dupped._withAttributes = [...this._withAttributes]
     dupped._sort = this._sort
@@ -94,7 +96,7 @@ export default class Collection {
     this._onChangeCallbacks.forEach(cb => (cb === null ? null : cb()))
   }
 
-  async ids(ignoreOffsetAndLimit) {
+  async ids(ignoreOffsetAndLimit = false) {
     const scope = {
       sort: this._sort,
       query: this._query,
@@ -121,7 +123,7 @@ export default class Collection {
     return this.model.withAttributes(this._withAttributes).find(id)
   }
 
-  async records() {
+  async records(): Promise<any> {
     const ids = await this.ids()
     const driver = this.model.withAttributes(this._withAttributes)
     const records = ids.map(id => driver.find(id))

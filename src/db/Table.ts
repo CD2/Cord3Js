@@ -3,6 +3,7 @@ import Record from "./Record"
 import Ids from "./Ids"
 
 export default class Table {
+  [key: string]: any
   constructor(name) {
     this.name = name
   }
@@ -23,7 +24,7 @@ export default class Table {
     return this.records.get(id)
   }
 
-  getIds(key) {
+  getIds(key): any {
     if (!key) return this.ids
     if (!this.keyed_ids.has(key)) {
       this.keyed_ids.set(key, new Ids(key))
@@ -43,7 +44,7 @@ export default class Table {
   @action
   insertRecord(data) {
     const { id } = data
-    const record = this.records.has(id) ? this.records.get(id) : new Record(this, id)
+    const record: any = this.records.has(id) ? this.records.get(id) : new Record(this, id)
     record.fetched = true
     record.update(data)
     this.records.set(id, record)
@@ -57,7 +58,7 @@ export default class Table {
   @action
   insertAliases(aliasObject) {
     Object.entries(aliasObject).forEach(([alias, id]) => {
-      const recordData = this.records.get(alias)
+      const recordData: any = this.records.get(alias)
       if (recordData) {
         const data = recordData.data.toJS()
         data.id = id

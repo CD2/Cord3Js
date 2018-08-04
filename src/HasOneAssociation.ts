@@ -2,7 +2,8 @@ import { Model } from "./model"
 import { camelize } from "help-my-strings"
 import attribute from "./dsl/attribute"
 export default class HasOneAssication {
-  static install(model, name, { model: foreignModelName, foreignKey } = {}) {
+  [key: string]: any
+  static install(model, name, { model: foreignModelName, foreignKey }: any = {}) {
     if (!foreignModelName) foreignModelName = camelize(name)
     if (!foreignKey) foreignKey = `${name}_id`
 
@@ -72,7 +73,7 @@ export default class HasOneAssication {
     return this.owner[this.options.foreignKey]
   }
   set foreignKey(val) {
-    return (this.owner[this.options.foreignKey] = val)
+    this.owner[this.options.foreignKey] = val
   }
 
   async get() {
