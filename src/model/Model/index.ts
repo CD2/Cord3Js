@@ -149,10 +149,10 @@ class Model {
     return true
   }
 
-  async _create_record() {
+  async _create_record(this: any) {
     const attributes = this._attributesForSaveWithValues()
     await this.runCallbacks(`beforeCreate`)
-    const { data, errors } = await Model.perform(`create`, attributes)
+    const { data, errors } = await this.constructor.perform(`create`, attributes)
     if (this.processErrors(errors)) {
       throw `save_failed`
     }
