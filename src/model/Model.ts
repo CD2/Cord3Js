@@ -1,26 +1,79 @@
-// @ts-check
+import { humanize, pluralize } from "help-my-strings"
 import { observable } from "mobx"
-import Validator from "../validators/Validator"
-import Collection from "../Collection"
-import IdsModel from "../Ids"
-import { RequestBuilder } from "./RequestBuilder"
-import { pluralize, humanize } from "help-my-strings"
 
-import "../validators/Presence"
-import "../validators/Acceptance"
-import "../validators/Format"
-import "../validators/Email"
-import "../validators/Password"
+import Collection from "./Collection"
+import IdsModel from "./Ids"
+import { Attribute } from "../dsl/attribute"
+import FileManager from "../FileManager"
+
+export function createModel({ name, attributes = [], validations = {}, uploaders = {} }, NewModel) {
+  NewModel.className = name
+  attributes.forEach(attr => Attribute.install(NewModel.prototype, attr))
+  NewModel.prototype.validations = validations
+  Object.keys(uploaders).forEach(name => FileManager.install(NewModel, name, uploaders[name]))
+  return NewModel
+}
+
+const validatePresence = value => {
+  const msg = "is required"
+  if (value === undefined || value === null) {
+    return msg
+  } else if (typeof value === `boolean`) {
+    return
+  } else if (typeof value === `string`) {
+    if (value === ``) return msg
+  } else if (Array.isArray(value)) {
+    if (value.length === 0) return msg
+  } else if (typeof value === `object`) {
+    if (Object.keys(value).length === 0) return msg
+  }
+}
+
+const validateEmail = value => {
+  if (
+    !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+      value,
+    )
+  ) {
+    return `must be a valid email`
+  }
+}
+
+async function loadRecord(model, id, attrs) {
+  let processedAttrs = []
+  attrs.forEach(attr => {
+    if (model.associationNames.includes(attr)) {
+      console.log("requesting assoc", model.apiName, id, attr)
+    }
+    const aliases = model.requestedAttributeAliases[attr]
+    if (aliases === undefined) {
+      processedAttrs.push(attr)
+    } else if (Array.isArray(aliases)) {
+      processedAttrs = processedAttrs.concat(aliases)
+    } else {
+      processedAttrs.push(aliases)
+    }
+  })
+
+  const { apiName, tableName } = model
+
+  const request = await model.store.findRecord(apiName, tableName, {
+    id,
+    attributes: processedAttrs,
+  })
+  if (request.errors && request.errors.length) {
+    throw request.errors
+  }
+
+  const record = new model()
+  record.requestedAttributes = attrs
+  record._id = id
+
+  return record
+}
 
 class Model {
   [key: string]: any
-
-  static get _validators() {
-    return (this as any).__validators || ((this as any).__validators = [])
-  }
-  static set _validators(val) {
-    ;(this as any).__validators = val
-  }
 
   async isValid() {
     this.errors.clear()
@@ -33,7 +86,7 @@ class Model {
     }
 
     let validatableAttributes
-    validatableAttributes = Object.keys((this.class as any)._validators)
+    validatableAttributes = Object.keys(this.validations || {})
     // if (this.newRecord) {
     // } else {
     //   validatableAttributes = this.changes.keys().slice(0)
@@ -41,30 +94,36 @@ class Model {
     const context = this.newRecord ? `create` : `update`
 
     const attributeValidionPromises = validatableAttributes.map(async attr => {
-      const validations = this.validationsFor(attr)
-
+      const validations = (this.validations || {})[attr]
+      if (!validations) return
+      const { if: onlyIf, ...validators } = validations
       //filter the validations
-      const applicableValidations = validations.reduce((acc, val) => {
-        if (val.on && val.on !== context) return acc
-        if (val.if) {
-          const ifCallback = typeof val.if === `string` ? this[val.if] : val.if
-          // Checks to see whether the callback is a function, executes if it is otherwise
-          // calls the string in the model
-          if (typeof ifCallback === `function`) {
-            if (ifCallback.call(this, this) === false) return acc
-          } else {
-            if (!ifCallback) return acc
-          }
+
+      let applicableValidations
+      if (onlyIf) {
+        const ifCallback = typeof onlyIf === `string` ? this[onlyIf] : onlyIf
+        // Checks to see whether the callback is a function, executes if it is otherwise
+        // calls the string in the model
+        if (typeof ifCallback === `function`) {
+          if (ifCallback.call(this, this) === false) applicableValidations = []
+        } else if (!ifCallback) {
+          return (applicableValidations = [])
         }
-        return acc.concat(val)
-      }, [])
+      } else {
+        applicableValidations = Object.entries(validators)
+      }
 
       //call the validations
-      const validationPromises = applicableValidations.map(({ validator: name, options }) => {
-        const klass = Validator.getValidator(name)
-        if (klass === undefined) throw new Error(`unknown validator ${name}`)
-        const validator = new klass(options)
-        return validator.validate(this)
+      const validationPromises = applicableValidations.map(([name]) => {
+        let msg
+        if (name === "presence") {
+          msg = validatePresence(this[attr])
+        } else if (name === "email") {
+          msg = validateEmail(this[attr])
+        } else {
+          throw new Error(`unknown validation ${name}`)
+        }
+        if (msg) this.errors.add(attr, msg)
       })
 
       await Promise.all(validationPromises)
@@ -75,10 +134,6 @@ class Model {
     const isValid = this.errors.empty()
     if (isValid) await this.runCallbacks(`afterValidation`)
     return isValid
-  }
-
-  validationsFor(this: any, attr) {
-    return this.class._validators[attr] || []
   }
 
   errors = {
@@ -157,7 +212,7 @@ class Model {
       throw `save_failed`
     }
     this._id = data.id
-    await this.load()
+    await this.reload()
     await this.runCallbacks(`afterCreate`)
     return this._id
   }
@@ -253,7 +308,7 @@ class Model {
   }
 
   assignAttributes(attrs) {
-    Object.entries(attrs).forEach(([key, value]) => (this[key] = value))
+    Object.entries(attrs).forEach(([key, value]) => Attribute.set(this, key, value, {}))
   }
 
   changed() {
@@ -303,19 +358,11 @@ class Model {
     this.requestedAttributes = requestedAttributes
   }
 
-  static new(this: any, ...args) {
-    return new this(...args)
-  }
-
   get newRecord() {
     return this._id === undefined
   }
   get persisted() {
     return !this.newRecord
-  }
-
-  static withAttributes(attributes) {
-    return new RequestBuilder(this, { attributes })
   }
 
   static isModel(thing) {
@@ -337,7 +384,7 @@ class Model {
   withAttributes(this: any, attrs) {
     if (this.persisted) {
       const newAttrs = [...this.requestedAttributes, ...attrs]
-      return this.class.withAttributes(newAttrs).find(this.id)
+      return this.class.find(this.id, newAttrs)
     }
     this.requestedAttributes = this.requestedAttributes.concat(attrs)
     return this
@@ -351,26 +398,12 @@ class Model {
     return this.associations.find(({ name }) => name === needleName)
   }
 
-  async load(this: any) {
-    const { id, requestedAttributes } = this
-    const { apiName, tableName } = this.class
-    this.loading = true
-
-    const request = await this.class.store.findRecord(apiName, tableName, {
-      id,
-      attributes: requestedAttributes,
-    })
-    if (request.errors && request.errors.length) {
-      throw request.errors
-    }
-  }
-
   reload(this: any) {
     return this.class.reload(this.id, this.requestedAttributes)
   }
 
   static reload(this: any, id, attributes) {
-    return this.store.findRecord(this.apiName, this.tableName, { id, attributes, reload: true })
+    return this.store.findRecord(this.apiName, this.tableName, { id, attributes })
   }
 
   toJSON() {
@@ -391,24 +424,36 @@ class Model {
     return IdsModel.bind(null, this)
   }
 
-  static prepare(this: any, id) {
-    const model = new this()
-    model._id = id
-    return model
-  }
+  static db: any = {}
 
-  static find(id) {
-    return new RequestBuilder(this, { id })
+  static find(id, attributes: string[] = []) {
+    if (!(this.apiName in this.db)) {
+      this.db[this.apiName] = {}
+    }
+    const table = this.db[this.apiName]
+    if (!(id in table)) {
+      table[id] = {}
+    }
+
+    const tableKey = attributes.length === 0 ? "RECORD_EXISTS?" : JSON.stringify(attributes)
+    if (!(tableKey in table[id])) {
+      console.log("loading record for ", id, tableKey)
+      const prom = loadRecord(this, id, attributes)
+      // prom
+      //   .then(() => {
+      //     delete table[id][tableKey]
+      //   })
+      //   .catch(() => {
+      //     delete table[id][tableKey]
+      //   })
+      table[id][tableKey] = prom
+    }
+
+    return table[id][tableKey]
   }
 
   static all() {
     return new Collection(this)
-  }
-  static first(...args) {
-    return this.all().first(...args)
-  }
-  static last(...args) {
-    return this.all().last(...args)
   }
 
   static get requestedAttributeAliases() {
