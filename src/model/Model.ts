@@ -4,46 +4,12 @@ import { observable } from "mobx"
 import Collection from "./Collection"
 import IdsModel from "./Ids"
 import FileManager from "../FileManager"
+import { Attribute } from "../dsl/attribute"
 
-class Attribute {
-  static get(record, name, { defaultValue }: any) {
-    if (record.changes.has(name)) {
-      return record.changes.get(name)
-    }
-    if (record.persisted) {
-      if (!record.record.data.has(name)) {
-        throw new Error(`attribute not loaded: ${name}`)
-      }
-      return record.record.get(name)
-    }
-    return defaultValue
-  }
-
-  static set(record, name, val, options) {
-    if (record.persisted) {
-      if (!record.record.data.has(name)) {
-        throw new Error(`cant modify persisted attributes without having them loaded`)
-      }
-    }
-    record.changes.set(name, val)
-  }
-
-  static install(model, name, options: any = {}) {
-    const klass = this
-
-    Object.defineProperty(model, name, {
-      get() {
-        return klass.get(this, name, options)
-      },
-      set(val) {
-        klass.set(this, name, val, options)
-      },
-      configurable: true,
-    })
-  }
-}
-
-export function createModel({ name, apiName='', attributes = [], validations = {}, uploaders = {} }, NewModel?) {
+export function createModel(
+  { name, apiName = "", attributes = [], validations = {}, uploaders = {} },
+  NewModel?,
+) {
   if (!NewModel) NewModel = class extends Model {}
   NewModel.className = name
   if (apiName) NewModel.apiName = apiName
