@@ -35,12 +35,3 @@ export class Attribute {
     })
   }
 }
-
-export default function attribute(target, name, descriptor: any = {}) {
-  if (name === `id`) throw new Error(`STOP SETTING \`id\` AS AN ATTRIBUTE`)
-  if (target instanceof Function) target = target.prototype
-
-  Attribute.install(target, name)
-
-  return {}
-}
