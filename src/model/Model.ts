@@ -65,7 +65,6 @@ const validateEmail = value => {
 async function loadRecord(model, id, attrs) {
   let processedAttrs = []
   attrs.forEach(attr => {
-
     const aliases = model.requestedAttributeAliases[attr]
     if (aliases === undefined) {
       processedAttrs.push(attr)
@@ -108,7 +107,6 @@ class Model {
 
     let validatableAttributes
     validatableAttributes = Object.keys(this.validations || {})
-
 
     const attributeValidionPromises = validatableAttributes.map(async attr => {
       const validations = (this.validations || {})[attr]
@@ -347,6 +345,7 @@ class Model {
   constructor(attributes = {}, requestedAttributes = []) {
     this.assignAttributes(attributes)
     this.requestedAttributes = requestedAttributes
+    Object.freeze(this)
   }
 
   get newRecord() {
@@ -383,8 +382,6 @@ class Model {
     this.requestedAttributes = this.requestedAttributes.concat(attrs)
     return this
   }
-
-
 
   reload(this: any) {
     return this.class.reload(this.id, this.requestedAttributes)
@@ -425,7 +422,6 @@ class Model {
 
     const tableKey = attributes.length === 0 ? "RECORD_EXISTS?" : JSON.stringify(attributes)
     if (!(tableKey in table[id])) {
-      console.log("loading record for ", id, tableKey)
       const prom = loadRecord(this, id, attributes)
       // prom
       //   .then(() => {
