@@ -43,9 +43,10 @@ class Attribute {
   }
 }
 
-export function createModel({ name, attributes = [], validations = {}, uploaders = {} }, NewModel?) {
+export function createModel({ name, apiName='', attributes = [], validations = {}, uploaders = {} }, NewModel?) {
   if (!NewModel) NewModel = class extends Model {}
   NewModel.className = name
+  if (apiName) NewModel.apiName = apiName
   attributes.forEach(attr => Attribute.install(NewModel.prototype, attr))
   NewModel.prototype.validations = validations
   Object.keys(uploaders).forEach(name => FileManager.install(NewModel, name, uploaders[name]))
