@@ -362,7 +362,6 @@ class Model {
   constructor(attributes = {}, requestedAttributes = []) {
     this.assignAttributes(attributes)
     this.requestedAttributes = requestedAttributes
-    Object.freeze(this)
   }
 
   get newRecord() {
