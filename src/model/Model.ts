@@ -345,7 +345,7 @@ class Model {
   constructor(attributes = {}, requestedAttributes = []) {
     this.assignAttributes(attributes)
     this.requestedAttributes = requestedAttributes
-    Object.freeze(this)
+    // Object.freeze(this)
   }
 
   get newRecord() {

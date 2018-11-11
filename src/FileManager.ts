@@ -21,8 +21,8 @@ export default class FileManager {
       }
     })
 
-    Attribute.install(model, `${name}_uid`)
-    Attribute.install(model, `${name}_name`)
+    Attribute.install(model.prototype, `${name}_uid`)
+    Attribute.install(model.prototype, `${name}_name`)
 
     model.requestedAttributeAliases[`${name}`] = [`${name}_name`, `${name}_uid`]
     model.additionalAttributesToSave.push(`${name}`)
