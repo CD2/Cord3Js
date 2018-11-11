@@ -343,7 +343,10 @@ class Model {
     return table_name
   }
 
+  static _apiName?:string
+
   static get apiName() {
+    if (this._apiName) { return this._apiName }
     let table_name
     table_name = this.className.split(/(?=[A-Z])/)
     const lastIdx = table_name.length - 1
@@ -351,6 +354,10 @@ class Model {
     table_name = table_name.join(`/`)
     table_name = table_name.toLowerCase()
     return table_name
+  }
+
+  static set apiName(val) {
+    this._apiName = val
   }
 
   static defaultRequestAttributes = []
