@@ -24,13 +24,30 @@ const nameToTableName = name => {
 }
 
 export function createModel(
-  { name, apiName = "", attributes = [], validations = {}, uploaders = {} },
+  {
+    name,
+    apiName = "",
+    attributes = [],
+    validations = {},
+    uploaders = {},
+    statics = {},
+    methods = {},
+  },
   NewModel?,
 ) {
   if (!NewModel) NewModel = class extends Model {}
   NewModel.className = name
   NewModel.tableName = nameToTableName(name)
   NewModel.apiName = apiName || nameToApiName(name)
+
+  for (const name in statics) {
+    NewModel[name] = statics[name]
+  }
+
+  for (const name in methods) {
+    NewModel.prototype[name] = methods[name]
+  }
+
   attributes.forEach(attr => Attribute.install(NewModel.prototype, attr))
   NewModel.prototype.validations = validations
   Object.keys(uploaders).forEach(name => FileManager.install(NewModel, name, uploaders[name]))
@@ -345,7 +362,7 @@ class Model {
   constructor(attributes = {}, requestedAttributes = []) {
     this.assignAttributes(attributes)
     this.requestedAttributes = requestedAttributes
-    // Object.freeze(this)
+    Object.freeze(this)
   }
 
   get newRecord() {
