@@ -58,7 +58,7 @@ export default class Store {
     })
   }
 
-  async findRecord(api, tableName, { id, attributes = [], reload = false }: any = {}) {
+  async findRecord(api, tableName, { id, attributes = [] }: any = {}) {
     const response = await this.fetchRecord(api, tableName, { id, attributes })
 
     if (response._errors) this.errorHandler(response._errors)

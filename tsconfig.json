@@ -16,6 +16,6 @@
     "outDir": "build",
     "baseUrl": "./src"
   },
-  "include": ["./src/index.ts"],
+  "include": ["./src/index.ts", "src/model/Model.ts", "src/model/Model/Model.ts"],
   "exclude": ["types"]
 }

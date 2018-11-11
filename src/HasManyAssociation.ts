@@ -23,6 +23,7 @@ export default class HasManyAssociation extends Collection {
     Object.defineProperty(model.prototype, name, {
       get() {
         if (!this[`_${name}`]) {
+          console.log("ACCESSING HAS MANYS LIKE THIS IS DEPRICATED. STOP IT. STOP IT NOW!")
           this[`_${name}`] = new HasManyAssociation(this, options)
         }
         return this[`_${name}`]
@@ -89,13 +90,8 @@ export default class HasManyAssociation extends Collection {
     return records.concat(this._unsavedRecords)
   }
 
-  // Depricate
-  new(attrs) {
-    return this.build(attrs)
-  }
-
   build(attrs) {
-    const record = this.targetModel.withAttributes(this._withAttributes).new(attrs)
+    const record = new this.targetModel(attrs, this._withAttributes)
     this._unsavedRecords.push(record)
 
     record.afterCreate(`adding newly created association`, record => {

@@ -22,13 +22,3 @@ export function toBase64(buffer) {
   }
   return window.btoa(binary)
 }
-
-export function depricationWarning(msg) {
-  let hidden = false
-  return () => {
-    if (!hidden) {
-      console.warn(`DEPRECIATION WARNING: `, msg)
-      hidden = true
-    }
-  }
-}
