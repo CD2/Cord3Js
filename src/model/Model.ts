@@ -6,7 +6,8 @@ import IdsModel from "./Ids"
 import { Attribute } from "../dsl/attribute"
 import FileManager from "../FileManager"
 
-export function createModel({ name, attributes = [], validations = {}, uploaders = {} }, NewModel) {
+export function createModel({ name, attributes = [], validations = {}, uploaders = {} }, NewModel?) {
+  if (!NewModel) NewModel = class extends Model {}
   NewModel.className = name
   attributes.forEach(attr => Attribute.install(NewModel.prototype, attr))
   NewModel.prototype.validations = validations
