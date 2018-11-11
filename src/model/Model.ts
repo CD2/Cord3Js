@@ -3,10 +3,13 @@ import { observable } from "mobx"
 
 import Collection from "./Collection"
 import IdsModel from "./Ids"
-import { Attribute } from "../dsl/attribute"
 import FileManager from "../FileManager"
+import { Attribute } from "../dsl/attribute"
 
-export function createModel({ name, apiName='', attributes = [], validations = {}, uploaders = {} }, NewModel?) {
+export function createModel(
+  { name, apiName = "", attributes = [], validations = {}, uploaders = {} },
+  NewModel?,
+) {
   if (!NewModel) NewModel = class extends Model {}
   NewModel.className = name
   if (apiName) NewModel.apiName = apiName
