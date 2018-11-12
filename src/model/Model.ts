@@ -6,13 +6,48 @@ import IdsModel from "./Ids"
 import FileManager from "../FileManager"
 import { Attribute } from "../dsl/attribute"
 
+const nameToApiName = name => {
+  let table_name = name.split(/(?=[A-Z])/)
+  const lastIdx = table_name.length - 1
+  table_name[lastIdx] = pluralize(table_name[lastIdx])
+  table_name = table_name.join(`/`)
+  table_name = table_name.toLowerCase()
+  return table_name
+}
+const nameToTableName = name => {
+  let table_name = name.split(/(?=[A-Z])/)
+  const lastIdx = table_name.length - 1
+  table_name[lastIdx] = pluralize(table_name[lastIdx])
+  table_name = table_name.join(`_`)
+  table_name = table_name.toLowerCase()
+  return table_name
+}
+
 export function createModel(
-  { name, apiName = "", attributes = [], validations = {}, uploaders = {} },
+  {
+    name,
+    apiName = "",
+    attributes = [],
+    validations = {},
+    uploaders = {},
+    statics = {},
+    methods = {},
+  },
   NewModel?,
 ) {
   if (!NewModel) NewModel = class extends Model {}
   NewModel.className = name
-  if (apiName) NewModel.apiName = apiName
+  NewModel.tableName = nameToTableName(name)
+  NewModel.apiName = apiName || nameToApiName(name)
+
+  for (const name in statics) {
+    NewModel[name] = statics[name]
+  }
+
+  for (const name in methods) {
+    NewModel.prototype[name] = methods[name]
+  }
+
   attributes.forEach(attr => Attribute.install(NewModel.prototype, attr))
   NewModel.prototype.validations = validations
   Object.keys(uploaders).forEach(name => FileManager.install(NewModel, name, uploaders[name]))
@@ -89,11 +124,6 @@ class Model {
 
     let validatableAttributes
     validatableAttributes = Object.keys(this.validations || {})
-    // if (this.newRecord) {
-    // } else {
-    //   validatableAttributes = this.changes.keys().slice(0)
-    // }
-    const context = this.newRecord ? `create` : `update`
 
     const attributeValidionPromises = validatableAttributes.map(async attr => {
       const validations = (this.validations || {})[attr]
@@ -321,44 +351,11 @@ class Model {
     this.changes.clear()
   }
 
-  static _className: any
-  static get className() {
-    return this._className || this.name
-  }
-
-  static set className(val) {
-    this._className = val
-  }
-
-  static get tableName() {
-    let table_name
-    table_name = this.className.split(/(?=[A-Z])/)
-    const lastIdx = table_name.length - 1
-    table_name[lastIdx] = pluralize(table_name[lastIdx])
-    table_name = table_name.join(`_`)
-    table_name = table_name.toLowerCase()
-    return table_name
-  }
-
-  static _apiName?:string
-
-  static get apiName() {
-    if (this._apiName) { return this._apiName }
-    let table_name
-    table_name = this.className.split(/(?=[A-Z])/)
-    const lastIdx = table_name.length - 1
-    table_name[lastIdx] = pluralize(table_name[lastIdx])
-    table_name = table_name.join(`/`)
-    table_name = table_name.toLowerCase()
-    return table_name
-  }
-
-  static set apiName(val) {
-    this._apiName = val
-  }
+  static className: string
+  static tableName: string
+  static apiName: string
 
   static defaultRequestAttributes = []
-  static associations = []
   _id = undefined
   changes = observable.map()
 
@@ -371,6 +368,9 @@ class Model {
     return this._id === undefined
   }
   get persisted() {
+    console.groupCollapsed("DO NOT USE PERSISTED")
+    console.trace()
+    console.groupEnd()
     return !this.newRecord
   }
 
@@ -397,14 +397,6 @@ class Model {
     }
     this.requestedAttributes = this.requestedAttributes.concat(attrs)
     return this
-  }
-
-  static get associationNames() {
-    return this.associations.map(({ name }) => name)
-  }
-
-  static getAssociation(needleName) {
-    return this.associations.find(({ name }) => name === needleName)
   }
 
   reload(this: any) {

@@ -1,5 +1,5 @@
 import { observable, action } from "mobx"
-import attribute from "./dsl/attribute"
+import { Attribute } from "./dsl/attribute"
 
 export default class FileManager {
   [key: string]: any
@@ -21,8 +21,8 @@ export default class FileManager {
       }
     })
 
-    attribute(model, `${name}_uid`)
-    attribute(model, `${name}_name`)
+    Attribute.install(model.prototype, `${name}_uid`)
+    Attribute.install(model.prototype, `${name}_name`)
 
     model.requestedAttributeAliases[`${name}`] = [`${name}_name`, `${name}_uid`]
     model.additionalAttributesToSave.push(`${name}`)
