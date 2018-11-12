@@ -436,13 +436,13 @@ class Model {
     const tableKey = attributes.length === 0 ? "RECORD_EXISTS?" : JSON.stringify(attributes)
     if (!(tableKey in table[id])) {
       const prom = loadRecord(this, id, attributes)
-      // prom
-      //   .then(() => {
-      //     delete table[id][tableKey]
-      //   })
-      //   .catch(() => {
-      //     delete table[id][tableKey]
-      //   })
+      prom
+        .then(() => {
+          delete table[id][tableKey]
+        })
+        .catch(() => {
+          delete table[id][tableKey]
+        })
       table[id][tableKey] = prom
     }
 
