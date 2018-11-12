@@ -368,9 +368,6 @@ class Model {
     return this._id === undefined
   }
   get persisted() {
-    console.groupCollapsed("DO NOT USE PERSISTED")
-    console.trace()
-    console.groupEnd()
     return !this.newRecord
   }
 
