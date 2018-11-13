@@ -285,7 +285,8 @@ class Model {
     if (errors.length > 0) {
       throw `delete_failed`
     }
-    this.record.remove()
+    // TODO: removed the following to prevent delete issues - needs to be put back if cache switched on
+    // this.record.remove()
     this.runCallbacks(`afterDestroy`)
   }
   static callbacks(this: any, name) {
