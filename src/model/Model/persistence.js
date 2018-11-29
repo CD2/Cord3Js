@@ -11,7 +11,9 @@ export default BaseCls =>
       this.class.additionalAttributesToSave.forEach(a => {
         const value = this[a].serialize()
         if (value) {
-          attrs = { ...attrs, ...value }
+          attrs = { ...attrs,
+            ...value
+          }
         }
       })
       return attrs
@@ -38,12 +40,13 @@ export default BaseCls =>
     async _create_record() {
       const attributes = this._attributesForSaveWithValues()
       await this.runCallbacks(`beforeCreate`)
-      const { data, errors } = await this.class.perform(`create`, attributes)
+      const {
+        data,
+        errors
+      } = await this.class.perform(`create`, attributes)
+      debugger
       if (errors.length > 0) {
-        Object.entries(errors[0]).forEach(([field, messages]) => {
-          messages.forEach(msg => this.errors.add(field, msg))
-        })
-        throw `save_failed`
+        this.parseErrors(errors)
       }
       this._id = data.id
       await this.load()
@@ -55,22 +58,33 @@ export default BaseCls =>
       const attributes = this._attributesForSaveWithValues()
       //TODO: only save changed fields
       await this.runCallbacks(`beforeUpdate`)
-      const { data, errors } = await this.perform(`update`, attributes)
+      const {
+        data,
+        errors
+      } = await this.perform(`update`, attributes)
+      debugger
       if (errors.length > 0) {
-        Object.entries(errors[0]).forEach(([field, messages]) => {
-          messages.forEach(msg => this.errors.add(field, msg))
-        })
-        throw `save_failed`
+        this.parseErrors(errors)
       }
-      this.record.update({ ...attributes, ...data })
+      this.record.update({ ...attributes,
+        ...data
+      })
       this.reset()
       this.runCallbacks(`afterUpdate`)
     }
 
+    parseErrors(errors) {
+      Object.entries(JSON.parse(errors[0])).forEach(([field, messages]) => {
+        messages.forEach(msg => this.errors.add(field, msg))
+      })
+      throw `save_failed`
+    }
     async destroy() {
       if (!this.persisted) throw new Error(`YO CANT DELETE THIS - ITS NOT REALLY THERE YET`)
       await this.runCallbacks(`beforeDestroy`)
-      const { errors } = await this.perform(`destroy`)
+      const {
+        errors
+      } = await this.perform(`destroy`)
       if (errors.length > 0) {
         throw `delete_failed`
       }
