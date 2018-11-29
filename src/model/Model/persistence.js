@@ -44,7 +44,6 @@ export default BaseCls =>
         data,
         errors
       } = await this.class.perform(`create`, attributes)
-      debugger
       if (errors.length > 0) {
         this.parseErrors(errors)
       }
@@ -62,7 +61,6 @@ export default BaseCls =>
         data,
         errors
       } = await this.perform(`update`, attributes)
-      debugger
       if (errors.length > 0) {
         this.parseErrors(errors)
       }
